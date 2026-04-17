@@ -1,4 +1,24 @@
 body {
     background-color: black;
-    color: antiquewhite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#Credits {
+    font-family: "Bebas Neue", sans-serif;
+    border: 12px solid #681813;
+    background-color: #222222;
+    color: white;
+    width: 50%;
+
+}
+
+#Header {
+    color: white;
+}
+
+p {
+    text-align: center;
 }
