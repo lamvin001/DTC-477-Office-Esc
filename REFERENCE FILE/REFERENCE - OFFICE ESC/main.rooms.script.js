@@ -156,6 +156,7 @@ function resetChairs() {
     el.style.top           = pos[1] + '%';
     el.style.width         = pos[2] + '%';
     el.style.height        = pos[3] + '%';
+    el.style.transform = `rotate(${pos[4]}deg) scaleX(${pos[5]})`;
     el.style.opacity       = '1';
     el.style.pointerEvents = '';
     el.style.border        = '';
@@ -171,22 +172,31 @@ function clickChair(index) {
   if (!el || el.classList.contains('moving') || el.classList.contains('stacked') || G.chairsDone) return;
 
   G.chairCount++;
+  el.style.zIndex = G.chairCount;
   document.getElementById('stack-counter').textContent = 'STACKED: ' + G.chairCount + ' / ' + TOTAL_CHAIRS;
 
   // Stack position — chairs pile up from the bottom, growing upward
   var stackY = Math.max(20, 85 - G.chairCount * 1.2);
 
   el.classList.add('moving');
-  el.style.left       = '50%';   // horizontal centre
-  el.style.top        = stackY + '%';
-  el.style.width      = '8%';
-  el.style.height     = '12%';
+  el.style.left       = '40%';   // horizontal centre
+  el.style.top        = stackY - 25 + '%';
+  el.style.transform = `rotate(0deg) scaleX(1)`;
+  el.style.width      = '20%';
+  el.style.height     = '26%';
   el.style.border     = '0';
   el.style.background = 'transparent';
 
   // After the slide animation finishes, add a visual plank to the stack
   setTimeout(function() {
-    el.classList.add('stacked');
+    //el.classList.add('stacked');
+
+    // change image for all chairs except the first one stacked
+    if (G.chairCount > 1) {
+      const img = el.querySelector('img');
+      img.src = 'img/chair-stacked.png';
+    }
+
     var plank = document.createElement('div');
     plank.className = 'stack-plank';
     document.getElementById('chair-stack-zone').appendChild(plank);

@@ -459,9 +459,10 @@ html, body {
   object-fit: contain;
   pointer-events: none;
   transform: scale(1.4);
+
 }
 
-.stack-plank {
+/* .stack-plank {
   width: 88%;
   height: 13px;
   background: linear-gradient(180deg, #7a7a7a 0%, #4a4a4a 100%);
@@ -469,7 +470,7 @@ html, body {
   border-top: 2px solid #999;
   animation: plankIn 0.2s ease;
   flex-shrink: 0;
-}
+} */
 
 @keyframes plankIn {
   from { opacity: 0; transform: scaleX(0.6); }
