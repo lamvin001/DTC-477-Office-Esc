@@ -122,7 +122,7 @@ function startGame() {
   updateInventory();
 }
 
-function replayGame() { startGame(); }
+function replayGame() { window.location.reload(); }
 
 
 // ─────────────────────────────────────────────────────────
