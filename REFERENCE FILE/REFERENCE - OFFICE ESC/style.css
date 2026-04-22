@@ -20,6 +20,22 @@ html, body {
   overflow: hidden;
   background: #000;
   font-family: var(--serif);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#Credits {
+    font-family: "Bebas Neue", sans-serif;
+    border: 12px solid #681813;
+    background-color: #222222;
+    color: white;
+    width: 50%
+}
+
+#Game {
+  padding: 10px;
 }
 
 /* ── SCREENS ── */
