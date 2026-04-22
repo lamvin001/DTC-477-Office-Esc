@@ -151,14 +151,57 @@ function navBack() {
   if (G.room > 0) goToRoom(G.room - 1);
 }
 
+// Returns null if navigation is allowed, or a denial message string if blocked.
+function getRoomBlockReason(nextIndex) {
+  const nextRoom = ROOMS[nextIndex];
+
+  // Must pick up phone before leaving room 0
+  if (!G.phonePickedUp) {
+    return 'Pick up the phone before moving on.';
+  }
+
+  // Puzzle completion checks per room (must complete current room before advancing)
+  const currentRoom = ROOMS[G.room];
+
+  if (currentRoom === 'r-paper' && !G.paperDone) {
+    return 'Find the odd paper out before moving on.';
+  }
+  if (currentRoom === 'r-updown' && !G.udDone) {
+    return 'Right all items in this room before moving on.';
+  }
+  if (currentRoom === 'r-chairs' && !G.chairsDone) {
+    return 'Stack all the chairs before moving on.';
+  }
+  if (currentRoom === 'r-water' && !G.waterDone) {
+    return 'Fill all buckets and turn off the faucet before moving on.';
+  }
+  if (currentRoom === 'r-wb' && !G.wbDone) {
+    return 'Solve the whiteboard puzzle before moving on.';
+  }
+
+  // Final room keycard check
+  if (nextRoom === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
+    return null; // handled separately by showDenied()
+  }
+
+  return null;
+}
+
 function navFwd() {
   const next = G.room + 1;
   if (next >= ROOMS.length) return;
+
+  const blockMsg = getRoomBlockReason(next);
+  if (blockMsg) {
+    showToast(blockMsg);
+    return;
+  }
 
   if (ROOMS[next] === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
     showDenied();
     return;
   }
+
   goToRoom(next);
 }
 

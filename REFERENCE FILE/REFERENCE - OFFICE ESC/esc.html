@@ -21,15 +21,11 @@
 <body>
 <div id="screen-intro" class="screen active">
  
-  <img class="scene-bg" src="img/1.png" alt="Intro background">
- 
-
+  <img class="scene-bg" src="img/intro.png" alt="Intro background">
 
   <div class="story-card">
-
-    
-
     <div class="story-inner">
+      <div class="go-title">OFFICE ESC</div>
       <p>
         Yesterday, you woke up to discover your brother gone on the day you were
         planning to meet with him. Kidnapped, you would later discover. Today, you
@@ -40,8 +36,10 @@
         to find an abandoned office building. The moment you walk through the front
         door, metal shutters close behind you, locking you inside.
       </p>
-      <button class="btn-go" onclick="startGame()">Start Game</button>
-      <button class="btn-go" onclick="window.location.href='about.html';">About Game</button>
+      <div class="btn-row">
+        <button class="btn-go" onclick="startGame()">Start Game</button>
+        <button class="btn-go" onclick="window.location.href='about.html';">About Game</button>
+      </div>
     </div>
   </div>
 </div>
@@ -50,19 +48,35 @@
 <div id="screen-game" class="screen">
   <div id="room-area">
     <div id="r-cubicle" class="room active">
-  <img class="room-bg" src="img/2.png" alt="Cubicle room">
+  <img class="room-bg" src="img/room1.png" alt="Cubicle room">
+
+  <!-- Desk: centered, sitting on the floor line (~60% down) -->
+  <img id="desk-img" src="img/desk.png" alt="Desk"
+       style="position:absolute;left:50%;top:52%;transform:translateX(-50%);width:68%;pointer-events:none;z-index:2;">
+
+  <!-- Phone: on the desk surface, left-center area of the tabletop. -->
+  <img id="phone-on-desk" src="img/iphone.png" alt="Phone on desk"
+       style="position:absolute;left:37%;top:57%;width:11%;z-index:3;pointer-events:none;">
+
+  <!-- Phone hotspot: matches phone image -->
   <div class="hs" id="hs-phone"
-       style="left:36%;top:51%;width:5%;height:14%;"
+       style="left:36%;top:53%;width:9%;height:13%;z-index:4;"
        onclick="pickupPhone()"></div>
+
+  <!-- Lock: on the top drawer. -->
+  <img id="lock-img" src="img/lock.png" alt="Lock"
+       style="position:absolute;left:67%;top:69%;width:7.5%;z-index:3;pointer-events:none;">
+
+  <!-- Drawer hotspot: covers the top drawer -->
   <div class="hs" id="hs-drawer"
-       style="left:58%;top:60%;width:12%;height:12%;"
+       style="left:65%;top:67%;width:12%;height:12%;z-index:4;"
        onclick="clickDrawer()"></div>
   </div>
  
 
 <!--PAPER ROOM -->
   <div id="r-paper" class="room">
-  <img class="room-bg" src="img/3.png" alt="Paper room">
+  <img class="room-bg" src="img/room2.png" alt="Paper room">
   <div id="papers-layer"></div>
   <div id="paper-found">KEY CARD</div>
 </div>
@@ -70,7 +84,7 @@
 <!--UPSIDE DOWN ROOM -->
   <div id="r-updown" class="room">
   <div id="ud-scene" style="position:absolute;inset:0;overflow:hidden;">
-    <img id="ud-bg-img" src="img/4.png" alt="Upside-down room" style="width:100%;height:100%;object-fit:cover;display:block;transform:rotate(0deg);transform-origin:50% 50%;transition:transform 1s ease;">
+    <img id="ud-bg-img" src="img/room3.png" alt="Upside-down room" style="width:100%;height:100%;object-fit:cover;display:block;transform:rotate(0deg);transform-origin:50% 50%;transition:transform 1s ease;">
   </div>
  
   <!-- Left lamp+plant -->
@@ -107,7 +121,7 @@
  
 <!-- CHAIR ROOM -->
   <div id="r-chairs" class="room">
-    <img class="room-bg" src="img/5.png" alt="Room with Chairs">      
+    <img class="room-bg" src="img/room4.png" alt="Room with Chairs">      
     <div id="chairs-field" style="position:absolute;inset:0;z-index:5;">
       <div class="chair-el" id="chair-0" style="left:21%;top:36%;width:9%;height:20%;" onclick="clickChair(0)">
         <img src="img/chair.png" alt="chair">
@@ -161,7 +175,7 @@
 
     <!-- WATER ROOM -->
     <div id="r-water" class="room">
-      <img class="room-bg" src="img/6.png" alt="Room with buckets and water">
+      <img class="room-bg" src="img/room5.png" alt="Room with buckets and water">
       <div id="buckets-layer" style="position:absolute;inset:0;z-index:5;pointer-events:none;">
         <div class="bucket-hs" id="bucket-0" style="left:56%;top:52%;width:9%;height:17%;"  onclick="clickBucket(0)"></div>
         <div class="bucket-hs" id="bucket-1" style="left:66%;top:53%;width:9%;height:17%;"  onclick="clickBucket(1)"></div>
@@ -176,7 +190,7 @@
 
     <!-- WHITEBOARD ROOM -->
     <div id="r-wb" class="room">
-      <img class="room-bg" src="img/7.png" alt="Office with whiteboard, clock, window, and files">
+      <img class="room-bg" src="img/room6.png" alt="Office with whiteboard, clock, window, and files">
       <div id="wb-blank-text" style="left:62%;top:27%;"></div>
       <div class="wb-obj" id="wbo-clock"  style="left:85%;top:8%;width:10%;height:21%;" onclick="pickWb('TIME','wbo-clock')">
         <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
@@ -197,7 +211,7 @@
 
     <!-- END ROOM -->
     <div id="r-end" class="room">
-      <img class="room-bg" src="img/8.png" alt="Outro screen">
+      <img class="room-bg" src="img/room7.png" alt="Outro screen">
       <div id="quiz-wrap">
         <div id="quiz-box">
           <h2>SUDDEN QUIZ</h2>
@@ -246,13 +260,13 @@
 
 <!-- OUTRO -->
 <div id="screen-outro" class="screen">
-  <img class="scene-bg" src="img/9.png" alt="">
+  <img class="scene-bg" src="img/outro.png" alt="">
   <div class="story-card">
     <div class="story-inner">
       <div class="go-title">GAME OVER</div>
       <p>After completing the sudden quiz, one of the room's walls opens to reveal your brother, restrained in a chair. You hastily free him, backtracking through the bizarre office space to find the initial shutter that locked you in has opened back up.</p>
       <p>You leave, relieved that you were able to save your brother, but left confused as to the motives of the person behind it all. Let alone why they forced you through a series of bizarre puzzles...</p>
-      <button class="btn-go" onclick="replayGame()">Replay Game</button>
+      <button class="btn-go" style="margin-top:26px;" onclick="replayGame()">Replay Game</button>
     </div>
   </div>
 </div>
