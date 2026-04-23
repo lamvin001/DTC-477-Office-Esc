@@ -53,15 +53,22 @@ function buildPapers() {
   if (G.paperDone) return;
 
   PAPERS.forEach((pos, index) => {
-    const div = document.createElement('div');
-    div.className    = 'paper-hs';
-    div.style.left   = pos[0] + '%';
-    div.style.top    = pos[1] + '%';
-    div.style.width  = pos[2] + '%';
-    div.style.height = pos[3] + '%';
+    const wrapper = document.createElement('div');
+    wrapper.className    = 'paper-hs';
+    wrapper.style.left   = pos[0] + '%';
+    wrapper.style.top    = pos[1] + '%';
+    wrapper.style.width  = pos[2] + '%';
+    wrapper.style.height = pos[3] + '%';
+    wrapper.style.transform = `rotate(${pos[4]}deg)`;
 
-    div.addEventListener('click', () => clickPaper(index, div));
-    layer.appendChild(div);
+    const img = document.createElement('img');
+    img.src   = index === ODD_PAPER ? 'img/exclamation.png' : 'img/question.png';
+    img.alt   = index === ODD_PAPER ? '!' : '?';
+    img.style.cssText = 'width:200%;height:200%;object-fit:contain;pointer-events:none;';
+
+    wrapper.appendChild(img);
+    wrapper.addEventListener('click', () => clickPaper(index, wrapper));
+    layer.appendChild(wrapper);
   });
 }
 

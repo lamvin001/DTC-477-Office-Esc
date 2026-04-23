@@ -50,24 +50,19 @@
     <div id="r-cubicle" class="room active">
   <img class="room-bg" src="img/room1.png" alt="Cubicle room">
 
-  <!-- Desk: centered, sitting on the floor line (~60% down) -->
   <img id="desk-img" src="img/desk.png" alt="Desk"
        style="position:absolute;left:50%;top:52%;transform:translateX(-50%);width:68%;pointer-events:none;z-index:2;">
 
-  <!-- Phone: on the desk surface, left-center area of the tabletop. -->
   <img id="phone-on-desk" src="img/iphone.png" alt="Phone on desk"
        style="position:absolute;left:37%;top:57%;width:11%;z-index:3;pointer-events:none;">
 
-  <!-- Phone hotspot: matches phone image -->
   <div class="hs" id="hs-phone"
        style="left:36%;top:53%;width:9%;height:13%;z-index:4;"
        onclick="pickupPhone()"></div>
 
-  <!-- Lock: on the top drawer. -->
   <img id="lock-img" src="img/lock.png" alt="Lock"
        style="position:absolute;left:67%;top:69%;width:7.5%;z-index:3;pointer-events:none;">
 
-  <!-- Drawer hotspot: covers the top drawer -->
   <div class="hs" id="hs-drawer"
        style="left:65%;top:67%;width:12%;height:12%;z-index:4;"
        onclick="clickDrawer()"></div>
@@ -77,6 +72,13 @@
 <!--PAPER ROOM -->
   <div id="r-paper" class="room">
   <img class="room-bg" src="img/room2.png" alt="Paper room">
+
+  <img src="img/table.png" alt="Table"
+       style="position:absolute;left:5%;top:45%;width:40%;pointer-events:none;z-index:2;">
+
+  <img src="img/printer.png" alt="Printer"
+       style="position:absolute;left:18%;top:40%;width:20%;pointer-events:none;z-index:3;">
+
   <div id="papers-layer"></div>
   <div id="paper-found">KEY CARD</div>
 </div>
