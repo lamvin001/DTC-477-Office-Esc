@@ -77,12 +77,12 @@ function pickWb(word, id) {
   if (G.wbDone) return;
 
   WB_ITEMS.forEach(btnId => {
-    document.getElementById(btnId).classList.remove('sel');
+    document.getElementById(btnId).classList.remove('sel', 'sel-wrong');
   });
-  document.getElementById(id).classList.add('sel');
-  document.getElementById('wb-blank-text').textContent = word;
 
   if (word === 'TIME') {
+    document.getElementById(id).classList.add('sel');
+    document.getElementById('wb-blank-text').textContent = word;
     G.wbDone = true;
     G.hasKey = true;
     updateInventory();
@@ -94,9 +94,11 @@ function pickWb(word, id) {
     }, 400);
 
   } else {
+    document.getElementById(id).classList.add('sel-wrong');
+    document.getElementById('wb-blank-text').textContent = word;
     setTimeout(() => {
       showToast('That does not feel right.');
-      document.getElementById(id).classList.remove('sel');
+      document.getElementById(id).classList.remove('sel-wrong');
       document.getElementById('wb-blank-text').textContent = '';
     }, 900);
   }

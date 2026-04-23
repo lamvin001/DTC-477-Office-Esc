@@ -619,6 +619,12 @@ html, body {
   border-color: var(--green2) !important;
 }
 
+.wb-obj.sel-wrong {
+  background: #8a1515 !important;
+  border-color: #cc2222 !important;
+  color: #fff !important;
+}
+
 /* ── QUIZ ── */
 
 #quiz-wrap {

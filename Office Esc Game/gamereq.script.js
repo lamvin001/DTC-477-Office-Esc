@@ -155,6 +155,7 @@ function navBack() {
 // Returns null if navigation is allowed, or a denial message string if blocked.
 function getRoomBlockReason(nextIndex) {
   const nextRoom = ROOMS[nextIndex];
+  return null;
 
   // Must pick up phone before leaving room 0
   if (!G.phonePickedUp) {
