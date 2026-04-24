@@ -17,9 +17,28 @@
 html, body {
   width: 100%;
   height: 100%;
+  min-width: 900px;
+  min-height: 560px;
   overflow: hidden;
   background: #000;
   font-family: var(--serif);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+}
+
+#Credits {
+    font-family: "Bebas Neue", sans-serif;
+    border: 12px solid #681813;
+    background-color: #222222;
+    color: white;
+    width: 50%
+}
+
+#Game {
+  padding: 10px;
 }
 
 /* ── SCREENS ── */
@@ -55,6 +74,7 @@ html, body {
   width: 92%;
 }
 
+
 .story-inner {
   background: var(--ash);
   padding: 34px 40px 40px;
@@ -81,8 +101,16 @@ html, body {
   margin-bottom: 14px;
 }
 
-.btn-go {
+.btn-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
   margin-top: 26px;
+}
+
+.btn-go {
+  margin-top: 0;
   display: inline-block;
   background: var(--green);
   color: #fff;
@@ -136,7 +164,7 @@ html, body {
 /* ── SIDEBAR ── */
 
 #sidebar {
-  width: 230px;
+  width: 200px;
   background: #0d0d0d;
   display: flex;
   flex-direction: column;
@@ -203,8 +231,8 @@ html, body {
 }
 
 .inv-slot {
-  width: 56px;
-  height: 78px;
+  width: 82px;
+  height: 112px;
   border: 2px solid #2a2a2a;
   background: #111;
   border-radius: 5px;
@@ -214,7 +242,7 @@ html, body {
   justify-content: center;
   gap: 3px;
   font-family: var(--mono);
-  font-size: .5rem;
+  font-size: .55rem;
   color: #3a3a3a;
   transition: all .3s;
 }
@@ -232,7 +260,15 @@ html, body {
 
 .inv-slot.key-filled {
   background: linear-gradient(140deg, #3a2800, #8a6000);
+  padding-left: 20px;
   border-color: #c49000;
+}
+
+#key-slot img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: brightness(0) invert(0.7) sepia(1) hue-rotate(10deg) saturate(3);
 }
 
 /* ── PHONE ── */
@@ -247,6 +283,7 @@ html, body {
   padding: 8px 8px 10px;
   flex: 1;
   min-height: 0;
+  max-height: 450px;
 }
 
 #ph-notch {
@@ -379,7 +416,7 @@ html, body {
   overflow: hidden;
   border-radius: 4px;
   border: 2px solid rgba(255, 180, 0, 0);
-  transition: border-color .15s, background .15s;
+  transition: left 0.25s ease, top 0.25s ease, border-color .15s, background .15s, transform 0.25s ease;
 }
 
 .ud-item:not(.righted):hover {
@@ -459,9 +496,10 @@ html, body {
   object-fit: contain;
   pointer-events: none;
   transform: scale(1.4);
+
 }
 
-.stack-plank {
+/* .stack-plank {
   width: 88%;
   height: 13px;
   background: linear-gradient(180deg, #7a7a7a 0%, #4a4a4a 100%);
@@ -469,7 +507,7 @@ html, body {
   border-top: 2px solid #999;
   animation: plankIn 0.2s ease;
   flex-shrink: 0;
-}
+} */
 
 @keyframes plankIn {
   from { opacity: 0; transform: scaleX(0.6); }
@@ -580,6 +618,12 @@ html, body {
   background: var(--green) !important;
   color: #fff !important;
   border-color: var(--green2) !important;
+}
+
+.wb-obj.sel-wrong {
+  background: #8a1515 !important;
+  border-color: #cc2222 !important;
+  color: #fff !important;
 }
 
 /* ── QUIZ ── */

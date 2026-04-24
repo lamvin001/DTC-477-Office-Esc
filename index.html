@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Office Esc</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+
+<!--INTRO-->
+
+<body>
+<div id="screen-intro" class="screen active">
+ 
+  <img class="scene-bg" src="img/intro.png" alt="Intro background">
+
+  <div class="story-card">
+    <div class="story-inner">
+      <div class="go-title">OFFICE ESC</div>
+      <p>
+        Yesterday, you woke up to discover your brother gone on the day you were
+        planning to meet with him. Kidnapped, you would later discover. Today, you
+        receive a mysterious message: "He awaits you here. Please, come and find him."
+      </p>
+      <p>
+        Attached was an address. Against your better judgement, you visit the location
+        to find an abandoned office building. The moment you walk through the front
+        door, metal shutters close behind you, locking you inside.
+      </p>
+      <div class="btn-row">
+        <button class="btn-go" onclick="startGame()">Start Game</button>
+        <button class="btn-go" onclick="window.location.href='about.html';">About Game</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--CUBICLE/DESK ROOM-->
+<div id="screen-game" class="screen">
+  <div id="room-area">
+    <div id="r-cubicle" class="room active">
+  <img class="room-bg" src="img/room1.png" alt="Cubicle room">
+
+  <!-- Desk: centered, sitting on the floor line (~60% down) -->
+  <img id="desk-img" src="img/desk.png" alt="Desk"
+       style="position:absolute;left:50%;top:52%;transform:translateX(-50%);width:68%;pointer-events:none;z-index:2;">
+
+  <!-- Phone: on the desk surface, left-center area of the tabletop. -->
+  <img id="phone-on-desk" src="img/iphone.png" alt="Phone on desk"
+       style="position:absolute;left:37%;top:57%;width:11%;z-index:3;pointer-events:none;">
+
+  <!-- Phone hotspot: matches phone image -->
+  <div class="hs" id="hs-phone"
+       style="left:40%;top:60%;width:5%;height:10%;z-index:4;"
+       onclick="pickupPhone()"></div>
+
+  <!-- Lock: on the top drawer. -->
+  <img id="lock-img" src="img/lock.png" alt="Lock"
+       style="position:absolute;left:67%;top:72%;width:7.5%;z-index:3;pointer-events:none;">
+
+  <!-- Drawer hotspot -->
+  <div class="hs" id="hs-drawer"
+       style="left:66%;top:72%;width:10%;height:10%;z-index:4;"
+       onclick="clickDrawer()"></div>
+  </div>
+ 
+
+<!--PAPER ROOM -->
+  <div id="r-paper" class="room">
+  <img class="room-bg" src="img/room2.png" alt="Paper room">
+
+  <!-- Table -->
+  <img src="img/table.png" alt="Table"
+       style="position:absolute;left:2%;top:45%;width:40%;pointer-events:none;z-index:2;">
+
+  <!-- Printer sitting on the table  -->
+  <img src="img/printer.png" alt="Printer"
+       style="position:absolute;left:13%;top:40%;width:20%;pointer-events:none;z-index:3;">
+
+  <div id="papers-layer"></div>
+  <div id="paper-found">KEY CARD</div>
+</div>
+
+<!--UPSIDE DOWN ROOM -->
+  <div id="r-updown" class="room">
+  <div id="ud-scene" style="position:absolute;inset:0;overflow:hidden;">
+    <img id="ud-bg-img" src="img/room3.png" alt="Upside-down room" style="width:100%;height:100%;object-fit:cover;display:block;transform:rotate(0deg);transform-origin:50% 50%;transition:transform 1s ease;">
+  </div>
+ 
+  <!-- Left plant -->
+  <div class="ud-item" id="ud-plant1"
+       style="left:3%;top:2%;width:15%;height:40%;transform:rotate(45deg);"
+       onclick="clickUD('ud-plant1', 0, this)">
+    <img src="img/left-plant.png">
+  </div>
+ 
+  <!-- Right plant2 -->
+  <div class="ud-item" id="ud-plant2"
+       style="left:83%;top:50%;width:16%;height:40%;transform:rotate(120deg);"
+       onclick="clickUD('ud-plant2', 1, this)">
+    <img src="img/right-plant.png">
+  </div>
+ 
+  <!-- Desk -->
+  <div class="ud-item" id="ud-desk"
+       style="left:22%;top:3%;width:35%;height:55%;transform:rotate(90deg);"
+       onclick="clickUD('ud-desk', 2, this)">
+    <img src="img/desk-setup.png">
+  </div>
+ 
+  <!-- Filing cabinet -->
+  <div class="ud-item" id="ud-cabinet"
+       style="left:57%;top:2%;width:16%;height:30%;transform:rotate(315deg);"
+       onclick="clickUD('ud-cabinet', 3, this)">
+    <img src="img/brown-cabinet.png">
+  </div>
+ 
+  <!-- desk lamp-->
+  <div class="ud-item" id="ud-phone"
+       style="left:60%;top:50%;width:10%;height:17%;transform:rotate(180deg);"
+       onclick="clickUD('ud-phone', 4, this)">
+    <img src="img/phone.png">
+  </div>
+  <div id="ud-progress">LOOKS RIGHT!: <span id="ud-count">0</span> / 5</div>
+</div>
+ 
+<!-- CHAIR ROOM -->
+  <div id="r-chairs" class="room">
+    <img class="room-bg" src="img/room4.png" alt="Room with Chairs">      
+    <div id="chairs-field" style="position:absolute;inset:0;z-index:5;">
+      <div class="chair-el" id="chair-0" style="left:21%;top:36%;width:9%;height:20%;" onclick="clickChair(0)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-1" style="left:31%;top:34%;width:9%;height:20%;" onclick="clickChair(1)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-2" style="left:42%;top:33%;width:9%;height:20%;" onclick="clickChair(2)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-3" style="left:54%;top:33%;width:9%;height:20%;" onclick="clickChair(3)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-4" style="left:65%;top:33%;width:9%;height:20%;" onclick="clickChair(4)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-5" style="left:75%;top:35%;width:9%;height:20%;" onclick="clickChair(5)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-6" style="left:13%;top:47%;width:10%;height:22%;" onclick="clickChair(6)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-7" style="left:24%;top:47%;width:10%;height:22%;" onclick="clickChair(7)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-8" style="left:36%;top:47%;width:10%;height:22%;" onclick="clickChair(8)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-9" style="left:48%;top:47%;width:10%;height:22%;" onclick="clickChair(9)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-10" style="left:60%;top:47%;width:10%;height:22%;" onclick="clickChair(10)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-11" style="left:72%;top:47%;width:10%;height:22%;" onclick="clickChair(11)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-12" style="left:6%;top:60%;width:11%;height:24%;" onclick="clickChair(12)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+      <div class="chair-el" id="chair-13" style="left:85%;top:59%;width:11%;height:24%;" onclick="clickChair(13)">
+        <img src="img/chair.png" alt="chair">
+      </div>
+    </div>
+
+    <!-- STACKING -->
+    <div id="chair-stack-zone" style="position:absolute;bottom:2%;left:50%;transform:translateX(-50%);width:14%;z-index:15;display:flex;flex-direction:column-reverse;align-items:center;pointer-events:none;gap:0px;min-height:20px;"></div>
+    <div id="stack-counter" style="position:absolute;bottom:2%;left:50%;transform:translateX(-50%) translateY(-28px);background:rgba(0,0,0,.75);color:#fff;font-family:var(--mono);font-size:.78rem;padding:4px 14px;border-radius:2px;letter-spacing:1px;pointer-events:none;z-index:20;white-space:nowrap;">STACKED: 0 / 14</div>
+  </div>
+
+
+    <!-- WATER ROOM -->
+    <div id="r-water" class="room">
+      <img class="room-bg" src="img/room5.png" alt="Room with buckets and water">
+      <div id="buckets-layer" style="position:absolute;inset:0;z-index:5;pointer-events:none;">
+        <div class="bucket-hs" id="bucket-0" style="left:56%;top:52%;width:9%;height:17%;"  onclick="clickBucket(0)"></div>
+        <div class="bucket-hs" id="bucket-1" style="left:66%;top:53%;width:9%;height:17%;"  onclick="clickBucket(1)"></div>
+        <div class="bucket-hs" id="bucket-2" style="left:58%;top:65%;width:9%;height:16%;"  onclick="clickBucket(2)"></div>
+        <div class="bucket-hs" id="bucket-3" style="left:68%;top:67%;width:10%;height:16%;" onclick="clickBucket(3)"></div>
+        <div class="bucket-hs" id="bucket-4" style="left:58%;top:76%;width:10%;height:17%;" onclick="clickBucket(4)"></div>
+        <div class="bucket-hs" id="bucket-5" style="left:69%;top:78%;width:10%;height:15%;" onclick="clickBucket(5)"></div>
+      </div>
+      <div id="faucet-hs"    style="position:absolute;left:11%;top:36%;width:10%;height:24%;z-index:10;cursor:pointer;border-radius:6px;" onclick="clickFaucet()"></div>
+      <div id="puddle-overlay" style="position:absolute;left:12%;top:49%;width:46%;height:34%;border-radius:50%;background:radial-gradient(ellipse,rgba(10,70,180,.22) 55%,transparent 100%);z-index:4;pointer-events:none;transition:opacity 1.2s ease;"></div>
+    </div>
+
+    <!-- WHITEBOARD ROOM -->
+    <div id="r-wb" class="room">
+      <img class="room-bg" src="img/room6.png" alt="Office with whiteboard, clock, window, and files">
+
+      <!-- Window: -->
+      <img src="img/window.png" alt="Window"
+           style="position:absolute;left:-12%;top:10%;width:40%;pointer-events:none;z-index:2;">
+
+      <!-- Whiteboard: -->
+      <img src="img/whiteboard.png" alt="Whiteboard"
+           style="position:absolute;left:25%;top:2%;width:60%;pointer-events:none;z-index:2;">
+
+      <!-- Clock:-->
+      <img src="img/clock.png" alt="Clock"
+           style="position:absolute;left:82%;top:6%;width:30%;pointer-events:none;z-index:2;">
+
+      <!-- Cabinet:-->
+      <img src="img/cabinet.png" alt="Cabinet"
+           style="position:absolute;left:60%;top:52%;width:40%;pointer-events:none;z-index:2;">
+
+      <!-- Whiteboard answer text -->
+      <div id="wb-blank-text" style="left:62%;top:27%;"></div>
+
+      <!-- Clock hotspot -->
+      <div class="wb-obj" id="wbo-clock"  style="left:90%;top:8%;width:12%;height:18%;" onclick="pickWb('TIME','wbo-clock')"></div>
+
+      <!-- Window hotspot -->
+      <div class="wb-obj" id="wbo-window" style="left:2%;top:10%;width:18%;height:30%;" onclick="pickWb('OUT','wbo-window')"></div>
+
+      <!-- Cabinet hotspot (folders/files) -->
+      <div class="wb-obj" id="wbo-folder" style="left:65%;top:52%;width:26%;height:30%;" onclick="pickWb('TRUTH','wbo-folder')"></div>
+    </div>
+
+    <!-- END ROOM -->
+    <div id="r-end" class="room">
+      <img class="room-bg" src="img/room7.png" alt="Outro screen">
+      <div id="quiz-wrap">
+        <div id="quiz-box">
+          <h2>SUDDEN QUIZ</h2>
+          <div id="quiz-num"></div>
+          <p id="quiz-q"></p>
+          <div id="quiz-opts"></div>
+          <div id="quiz-fb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDE BAR -->
+  <div id="sidebar">
+    <div id="nav-row">
+      <div id="btn-back" class="arr dim" onclick="navBack()">
+        <img src="img/left-arrow.png" alt="Back">
+      </div>
+      <div id="btn-fwd" class="arr" onclick="navFwd()">
+        <img src="img/right-arrow.png" alt="Forward">
+      </div>
+    </div>
+
+<!-- END ROOM -->
+  <div id="inv-row">
+    <div class="inv-slot" id="kc0">SLOT</div>
+    <div class="inv-slot" id="kc1">SLOT</div>
+    <div class="inv-slot" id="kc2">SLOT</div>
+    <div class="inv-slot" id="key-slot">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><circle cx="8" cy="9" r="5" stroke="#3a3a3a" stroke-width="2"/><line x1="12" y1="12" x2="22" y2="22" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="20" x2="22" y2="17" stroke="#3a3a3a" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span style="font-family:var(--mono);font-size:.42rem;color:#3a3a3a;">KEY</span>
+    </div>
+  </div>
+
+  <!-- PHONE -->
+  <div id="phone">
+    <div id="ph-notch"></div>
+      <div id="ph-msgs">
+        <div class="bbl" style="opacity:.35;font-size:.7rem;color:#888;background:#eee;border-radius:8px;padding:6px 10px;align-self:stretch;">Pick up the phone...</div>
+    </div>
+      <div id="ph-bar"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- OUTRO -->
+<div id="screen-outro" class="screen">
+  <img class="scene-bg" src="img/outro.png" alt="">
+  <div class="story-card">
+    <div class="story-inner">
+      <div class="go-title">GAME OVER</div>
+      <p>After completing the sudden quiz, one of the room's walls opens to reveal your brother, restrained in a chair. You hastily free him, backtracking through the bizarre office space to find the initial shutter that locked you in has opened back up.</p>
+      <p>You leave, relieved that you were able to save your brother, but left confused as to the motives of the person behind it all. Let alone why they forced you through a series of bizarre puzzles...</p>
+      <button class="btn-go" style="margin-top:26px;" onclick="replayGame()">Replay Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- DENIAL TO FINAL ROOM (IF ALL KEYCARDS AREN'T OBTAINED) -->
+<div id="denied-ov">
+  <div id="denied-box">
+    <h2>ACCESS DENIED</h2>
+    <p id="denied-msg">You must obtain all 3 keycards to enter this room.</p>
+    <div id="denied-inv"></div>
+    <button class="denied-btn" onclick="closeDenied()">Go Back</button>
+  </div>
+</div>
+
+
+<div id="modal-ov">
+  <div class="modal">
+    <h3 id="m-title"></h3>
+    <p id="m-body"></p>
+    <button class="m-btn" onclick="closeModal()">OK</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="gamereq.script.js"></script>
+<script src="main.rooms.script.js"></script>
+<script src="side.rooms.script.js"></script>
+</body>
+</html>

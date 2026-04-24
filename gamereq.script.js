@@ -32,26 +32,56 @@ const QUIZ = [
 ];
 
 const PAPERS = [
-  [5,68,6,12],[10,76,6,12],[16,70,6,12],[8,83,6,11],[22,72,5,11],
-  [27,63,5,10],[32,74,5,10],[30,83,5,10],[37,68,5,11],[42,58,5,10],
-  [43,72,5,10],[48,64,5,10],[51,76,5,10],[53,60,5,10],[56,72,5,10],
-  [58,82,5,10],
-  [55,60,6,11],  // the ! paper (has keycard)
-  [63,74,5,10],[67,66,5,10],[70,76,5,10],[74,60,5,10],[76,72,5,10],
-  [80,66,5,10],[83,76,5,10],[87,56,5,10],[89,66,5,10],[91,74,5,10],[93,82,5,10]
+  // [left, top, width, height, rotation]
+  [28,58,7,13,-12],[32,65,7,13,5],[35,55,7,13,18],[30,72,7,13,-7],[38,62,7,13,22],
+  [42,58,7,13,-15],[40,70,7,13,8],[45,64,7,13,-20],[48,57,7,13,14],[44,74,7,13,-5],
+  [50,62,7,13,25],[52,72,7,13,-18],[55,58,7,13,10],[57,68,7,13,-8],[60,62,7,13,20],
+  [62,74,7,13,-14],
+  [36,63,8,14,3],  // the ! paper (has keycard)
+  [48,70,7,13,16],[53,64,7,13,-22],[58,74,7,13,7],[63,60,7,13,-10],[65,70,7,13,19],
+  [43,60,7,13,-3],[67,64,7,13,-16],[38,70,7,13,12],[56,60,7,13,-25],[61,67,7,13,6],[46,67,7,13,-9]
 ];
 
 const CHAIRS = [
-  [20,36,8,24],[28,34,8,24],[37,33,8,24],[51,33,8,24],[58,35,8,24],[69,36,8,24],
-  [11,47,10,26],[18,47,10,26],[26,48,10,26],[37,48,10,26],[49,47,10,26],[59,47,10,26],
-  [4,58,10,30],[84,57,10,30]
-];
+[15,70,10,26,0,1],
+[15,10,10,26,60,1],
+[23,47,10,26,0,-1],
+[30,70,10,30,270,1],
+[35,10,8,24,90,-1],
+[37,45,10,26,0,1],
+[45,30,8,24,180,-1],
+[50,50,10,26,0,-1],
+[55,5,10,26,330,1],
+[65,30,8,24,45,1],
+[65,50,8,24,225,-1],
+[65,60,10,26,0,1],
+[70,0,8,24,180,1],
+[75,48,8,24,90,-1],
+[80,57,10,30,0,-1]
+]; // [left, top, width, height, rotation {0 = normal, 180 = upsidedown, 90 = sideways}, flip {1 = normal, -1 flipped}]
 
 const BUCKETS = [
   [55,40,12,19],[67,41,12,19],[50,54,12,19],[62,55,12,19],[55,67,11,18],[66,68,11,18]
 ];
 
-const UD_ITEMS = ['ud-lamp1','ud-lamp2','ud-desk','ud-cabinet','ud-desklamp'];
+const UD_ORDER = [
+  'ud-plant1',
+  'ud-desk',
+  'ud-cabinet',
+  'ud-plant2',
+  'ud-phone'
+];
+
+const UD_POSITIONS = [
+  { left: 13, top: 45, rot: 180 }, //plant1
+  { left: 70, top: 45, rot: 180 }, //plant2
+  { left: 35, top: 35, rot: 180 }, //desk
+  { left: 25, top: 65, rot: 180 }, //cabinet
+  { left: 29, top: 56, rot: 0 } //phone
+];
+
+let udStep = 0;
+const UD_ORIGINAL = {};
 
 let G = {};
 
@@ -110,7 +140,7 @@ function startGame() {
   updateInventory();
 }
 
-function replayGame() { startGame(); }
+function replayGame() { window.location.reload(); }
 
 
 // ─────────────────────────────────────────────────────────
@@ -139,14 +169,58 @@ function navBack() {
   if (G.room > 0) goToRoom(G.room - 1);
 }
 
+// Returns null if navigation is allowed, or a denial message string if blocked.
+function getRoomBlockReason(nextIndex) {
+  const nextRoom = ROOMS[nextIndex];
+  return null;
+
+  // Must pick up phone before leaving room 0
+  if (!G.phonePickedUp) {
+    return 'Pick up the phone before moving on.';
+  }
+
+  // Puzzle completion checks per room (must complete current room before advancing)
+  const currentRoom = ROOMS[G.room];
+
+  if (currentRoom === 'r-paper' && !G.paperDone) {
+    return 'Find the odd paper out before moving on.';
+  }
+  if (currentRoom === 'r-updown' && !G.udDone) {
+    return 'Right all items in this room before moving on.';
+  }
+  if (currentRoom === 'r-chairs' && !G.chairsDone) {
+    return 'Stack all the chairs before moving on.';
+  }
+  if (currentRoom === 'r-water' && !G.waterDone) {
+    return 'Fill all buckets and turn off the faucet before moving on.';
+  }
+  if (currentRoom === 'r-wb' && !G.wbDone) {
+    return 'Solve the whiteboard puzzle before moving on.';
+  }
+
+  // Final room keycard check
+  if (nextRoom === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
+    return null; // handled separately by showDenied()
+  }
+
+  return null;
+}
+
 function navFwd() {
   const next = G.room + 1;
   if (next >= ROOMS.length) return;
+
+  const blockMsg = getRoomBlockReason(next);
+  if (blockMsg) {
+    showToast(blockMsg);
+    return;
+  }
 
   if (ROOMS[next] === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
     showDenied();
     return;
   }
+
   goToRoom(next);
 }
 
@@ -276,4 +350,16 @@ function showToast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+document.addEventListener('dragstart', function(e) {
+  e.preventDefault();
+});
+
+function updateUDUI() {
+  document.getElementById('ud-count').textContent = udStep;
 }

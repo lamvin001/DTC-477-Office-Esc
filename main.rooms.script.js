@@ -9,11 +9,17 @@ function pickupPhone() {
   }
 
   G.phonePickedUp = true;
+
+  // Remove phone from desk
   document.getElementById('hs-phone').style.display = 'none';
+  document.getElementById('phone-on-desk').style.display = 'none';
+
+  // Clear the placeholder text
   document.getElementById('ph-msgs').innerHTML = '';
+
   showToast('You pick up the phone.');
 
-  setTimeout(function() {
+  setTimeout(() => {
     sendMessage('them', 'Some say Watchers detest unknown variables. Let us chat for 7392 hours of our life to come.');
   }, 700);
 }
@@ -30,6 +36,7 @@ function clickDrawer() {
 
   G.keyUsed = true;
   G.hasKey  = false;
+  document.getElementById('lock-img').style.display = 'none';
   updateInventory();
   addKeycard();
   showModal('DRAWER OPENED', 'You slide the key into the lock. Inside the drawer lies the third keycard, sealed in a plain envelope.');
@@ -41,22 +48,27 @@ function clickDrawer() {
 // ─────────────────────────────────────────────────────────
 
 function buildPapers() {
-  var layer = document.getElementById('papers-layer');
+  const layer = document.getElementById('papers-layer');
   layer.innerHTML = '';
   if (G.paperDone) return;
 
-  // .forEach() replaces the old for-loop + self-executing function trick
-  // index is automatically passed in, no extra wrapper needed
-  PAPERS.forEach(function(pos, index) {
-    var div = document.createElement('div');
-    div.className    = 'paper-hs';
-    div.style.left   = pos[0] + '%';
-    div.style.top    = pos[1] + '%';
-    div.style.width  = pos[2] + '%';
-    div.style.height = pos[3] + '%';
+  PAPERS.forEach((pos, index) => {
+    const wrapper = document.createElement('div');
+    wrapper.className    = 'paper-hs';
+    wrapper.style.left   = pos[0] + '%';
+    wrapper.style.top    = pos[1] + '%';
+    wrapper.style.width  = pos[2] + '%';
+    wrapper.style.height = pos[3] + '%';
+    wrapper.style.transform = `rotate(${pos[4]}deg)`;
 
-    div.addEventListener('click', function() { clickPaper(index, div); });
-    layer.appendChild(div);
+    const img = document.createElement('img');
+    img.src   = index === ODD_PAPER ? 'img/exclamation.png' : 'img/question.png';
+    img.alt   = index === ODD_PAPER ? '!' : '?';
+    img.style.cssText = 'width:200%;height:200%;object-fit:contain;pointer-events:none;';
+
+    wrapper.appendChild(img);
+    wrapper.addEventListener('click', () => clickPaper(index, wrapper));
+    layer.appendChild(wrapper);
   });
 }
 
@@ -67,22 +79,21 @@ function clickPaper(index, el) {
     el.classList.add('clicked');
     G.paperDone = true;
 
-    var found = document.getElementById('paper-found');
+    const found = document.getElementById('paper-found');
     found.style.display = 'block';
     found.style.left    = (PAPERS[index][0] - 1) + '%';
     found.style.top     = (PAPERS[index][1] - 14) + '%';
 
-    setTimeout(function() {
+    setTimeout(() => {
       addKeycard();
       showModal('FOUND IT', 'You flip the paper over. On the back, a keycard is taped flat. You peel it off carefully.');
       found.style.display = 'none';
     }, 450);
 
   } else {
-    // Wrong paper — shake it as feedback
-    var angle = (Math.random() * 16 - 8).toFixed(1);  // random number between -8 and 8
-    el.style.transform = 'rotate(' + angle + 'deg) scale(.91)';
-    setTimeout(function() { el.style.transform = ''; }, 180);
+    const angle = (Math.random() * 16 - 8).toFixed(1);
+    el.style.transform = `rotate(${angle}deg) scale(.91)`;
+    setTimeout(() => { el.style.transform = ''; }, 180);
     showToast('Just a question mark. Keep looking.');
   }
 }
@@ -93,49 +104,72 @@ function clickPaper(index, el) {
 // ─────────────────────────────────────────────────────────
 
 function resetUpsideDown() {
-  G.udCount = 0;
+  document.getElementById('ud-count').textContent = 0;
   G.udDone  = false;
+  udStep = 0;
 
-  UD_ITEMS.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('righted');
+  UD_ORDER.forEach(function(id, index) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // ✅ store original position ONCE
+    UD_ORIGINAL[id] = {
+      left: el.style.left,
+      top:  el.style.top
+    };
+
+    // reset position
+    el.style.left = UD_ORIGINAL[id].left;
+    el.style.top  = UD_ORIGINAL[id].top;
+
+    el.style.pointerEvents = '';
   });
-
-  var bg = document.getElementById('ud-bg-img');
-  if (bg) {
-    bg.style.transition = 'none';
-    bg.style.transform  = 'rotate(0deg)';
-    // Small delay before re-enabling the animation,
-    // so the reset jump happens instantly (not animated)
-    setTimeout(function() { bg.style.transition = 'transform 1s ease'; }, 50);
-  }
-
-  document.getElementById('ud-count').textContent = '0';
 }
 
-function rightItem(id, label) {
+function clickUD(id, index, el) {
   if (G.udDone) return;
 
-  var el = document.getElementById(id);
-  if (!el || el.classList.contains('righted')) return;
+  const original = {
+    left: el.style.left,
+    top: el.style.top,
+    transform: el.style.transform || ''
+  };
 
-  el.classList.add('righted');
-  G.udCount++;
-  document.getElementById('ud-count').textContent = G.udCount;
-  showToast(label + ' righted.');
+  const pos = UD_POSITIONS[index];
 
-  if (G.udCount >= TOTAL_UD_ITEMS) {
-    G.udDone = true;
-    var bg = document.getElementById('ud-bg-img');
-    if (bg) {
-      bg.style.transition = 'transform 1s ease';
-      bg.style.transform  = 'rotate(180deg)';  // 180deg flips it right-side up
+  // 1️⃣ move + rotate first
+  el.style.left = pos.left + '%';
+  el.style.top  = pos.top + '%';
+  el.style.transform = `rotate(${pos.rot}deg)`;
+
+  setTimeout(() => {
+
+    if (id === UD_ORDER[udStep]) {
+
+      // ✅ correct → lock it
+      udStep++;
+      updateUDUI();
+      el.style.pointerEvents = 'none';
+
+      if (udStep === UD_ORDER.length) {
+        G.udDone = true;
+        addKeycard();
+
+        setTimeout(() => {
+          showModal('PUZZLE COMPLETE', 'Everything falls into place. A keycard appears.');
+        }, 250);
+      }
+
+    } else {
+
+      // ❌ wrong → revert everything
+      el.style.left = original.left;
+      el.style.top = original.top;
+      el.style.transform = original.transform;
+
     }
-    addKeycard();
-    setTimeout(function() {
-      showModal('ROOM RIGHTED', 'Everything is back in order. A keycard slides out from beneath the overturned desk.');
-    }, 1100);
-  }
+
+  }, 180);
 }
 
 
@@ -149,13 +183,14 @@ function resetChairs() {
   document.getElementById('stack-counter').textContent = 'STACKED: 0 / ' + TOTAL_CHAIRS;
   document.getElementById('chair-stack-zone').innerHTML = '';
 
-  CHAIRS.forEach(function(pos, i) {
-    var el = document.getElementById('chair-' + i);
+  CHAIRS.forEach((pos, i) => {
+    const el = document.getElementById('chair-' + i);
     if (!el) return;
     el.style.left          = pos[0] + '%';
     el.style.top           = pos[1] + '%';
     el.style.width         = pos[2] + '%';
     el.style.height        = pos[3] + '%';
+    el.style.transform     = `rotate(${pos[4]}deg) scaleX(${pos[5]})`;
     el.style.opacity       = '1';
     el.style.pointerEvents = '';
     el.style.border        = '';
@@ -165,36 +200,39 @@ function resetChairs() {
 }
 
 function clickChair(index) {
-  var el = document.getElementById('chair-' + index);
+  const el = document.getElementById('chair-' + index);
 
-  // Do nothing if: chair doesn't exist, is already moving/stacked, or room is done
   if (!el || el.classList.contains('moving') || el.classList.contains('stacked') || G.chairsDone) return;
 
   G.chairCount++;
+  el.style.zIndex = G.chairCount;
   document.getElementById('stack-counter').textContent = 'STACKED: ' + G.chairCount + ' / ' + TOTAL_CHAIRS;
 
-  // Stack position — chairs pile up from the bottom, growing upward
-  var stackY = Math.max(20, 85 - G.chairCount * 1.2);
+  const stackY = Math.max(20, 85 - G.chairCount * 1.2);
 
   el.classList.add('moving');
-  el.style.left       = '50%';   // horizontal centre
-  el.style.top        = stackY + '%';
-  el.style.width      = '8%';
-  el.style.height     = '12%';
+  el.style.left       = '40%';
+  el.style.top        = stackY - 25 + '%';
+  el.style.transform  = `rotate(0deg) scaleX(1)`;
+  el.style.width      = '20%';
+  el.style.height     = '26%';
   el.style.border     = '0';
   el.style.background = 'transparent';
 
-  // After the slide animation finishes, add a visual plank to the stack
-  setTimeout(function() {
-    el.classList.add('stacked');
-    var plank = document.createElement('div');
+  setTimeout(() => {
+    if (G.chairCount > 1) {
+      const img = el.querySelector('img');
+      img.src = 'img/chair-stacked.png';
+    }
+
+    const plank = document.createElement('div');
     plank.className = 'stack-plank';
     document.getElementById('chair-stack-zone').appendChild(plank);
   }, 520);
 
   if (G.chairCount === TOTAL_CHAIRS) {
     G.chairsDone = true;
-    setTimeout(function() {
+    setTimeout(() => {
       showModal('ALL CHAIRS STACKED', 'All chairs are stacked. Move to the next room.');
     }, 700);
   }
