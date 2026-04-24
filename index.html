@@ -96,34 +96,39 @@
     <img id="ud-bg-img" src="img/room3.png" alt="Upside-down room" style="width:100%;height:100%;object-fit:cover;display:block;transform:rotate(0deg);transform-origin:50% 50%;transition:transform 1s ease;">
   </div>
  
-  <!-- Left lamp+plant -->
-  <div class="ud-item" id="ud-lamp1"
-       style="left:3%;top:2%;width:15%;height:52%;"
-       onclick="rightItem('ud-lamp1','LAMP')">
+  <!-- Left plant -->
+  <div class="ud-item" id="ud-plant1"
+       style="left:3%;top:2%;width:15%;height:40%;transform:rotate(45deg);"
+       onclick="clickUD('ud-plant1', 0, this)">
+    <img src="img/left-plant.png">
   </div>
  
-  <!-- Right lamp+plant -->
-  <div class="ud-item" id="ud-lamp2"
-       style="left:83%;top:2%;width:14%;height:52%;"
-       onclick="rightItem('ud-lamp2','LAMP')">
+  <!-- Right plant2 -->
+  <div class="ud-item" id="ud-plant2"
+       style="left:83%;top:50%;width:16%;height:40%;transform:rotate(120deg);"
+       onclick="clickUD('ud-plant2', 1, this)">
+    <img src="img/right-plant.png">
   </div>
  
   <!-- Desk -->
   <div class="ud-item" id="ud-desk"
-       style="left:22%;top:3%;width:60%;height:48%;"
-       onclick="rightItem('ud-desk','DESK')">
+       style="left:22%;top:3%;width:35%;height:55%;transform:rotate(90deg);"
+       onclick="clickUD('ud-desk', 2, this)">
+    <img src="img/desk-setup.png">
   </div>
  
   <!-- Filing cabinet -->
   <div class="ud-item" id="ud-cabinet"
-       style="left:57%;top:2%;width:16%;height:37%;"
-       onclick="rightItem('ud-cabinet','CABINET')">
+       style="left:57%;top:2%;width:16%;height:30%;transform:rotate(315deg);"
+       onclick="clickUD('ud-cabinet', 3, this)">
+    <img src="img/brown-cabinet.png">
   </div>
  
   <!-- desk lamp-->
-  <div class="ud-item" id="ud-desklamp"
-       style="left:27%;top:27%;width:12%;height:27%;"
-       onclick="rightItem('ud-desklamp','LAMP')">
+  <div class="ud-item" id="ud-phone"
+       style="left:60%;top:50%;width:10%;height:17%;transform:rotate(180deg);"
+       onclick="clickUD('ud-phone', 4, this)">
+    <img src="img/phone.png">
   </div>
   <div id="ud-progress">LOOKS RIGHT!: <span id="ud-count">0</span> / 5</div>
 </div>

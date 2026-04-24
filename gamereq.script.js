@@ -64,7 +64,24 @@ const BUCKETS = [
   [55,40,12,19],[67,41,12,19],[50,54,12,19],[62,55,12,19],[55,67,11,18],[66,68,11,18]
 ];
 
-const UD_ITEMS = ['ud-lamp1','ud-lamp2','ud-desk','ud-cabinet','ud-desklamp'];
+const UD_ORDER = [
+  'ud-plant1',
+  'ud-desk',
+  'ud-cabinet',
+  'ud-plant2',
+  'ud-phone'
+];
+
+const UD_POSITIONS = [
+  { left: 13, top: 45, rot: 180 }, //plant1
+  { left: 70, top: 45, rot: 180 }, //plant2
+  { left: 35, top: 35, rot: 180 }, //desk
+  { left: 25, top: 65, rot: 180 }, //cabinet
+  { left: 29, top: 56, rot: 0 } //phone
+];
+
+let udStep = 0;
+const UD_ORIGINAL = {};
 
 let G = {};
 
@@ -333,4 +350,16 @@ function showToast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+document.addEventListener('dragstart', function(e) {
+  e.preventDefault();
+});
+
+function updateUDUI() {
+  document.getElementById('ud-count').textContent = udStep;
 }
