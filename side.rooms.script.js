@@ -1,14 +1,21 @@
 // ─────────────────────────────────────────────────────────
-// ROOM 4 — WATER ROOM
+// ROOM 4 — FIRE ROOM
 // ─────────────────────────────────────────────────────────
+
+let fireStep = 0;
+let fireRound = 0;
+const FIRE_ROUNDS = 3;
 
 function buildBuckets() {
   G.bucketsFilled = Array(TOTAL_BUCKETS).fill(false);
   G.bucketCount   = 0;
   G.faucetOff     = false;
   G.waterDone     = false;
+  fireStep        = 0;
+  fireRound       = 0;
 
-  document.getElementById('puddle-overlay').style.opacity = '1';
+  const fire = document.getElementById('puddle-overlay');
+  if (fire) fire.style.opacity = '1';
 
   const faucet = document.getElementById('faucet-hs');
   if (faucet) {
@@ -23,38 +30,57 @@ function buildBuckets() {
 }
 
 function clickBucket(index) {
-  if (G.bucketsFilled[index]) return;
-  if (G.faucetOff) {
-    showToast('The faucet is off. No water to collect.');
+  if (G.waterDone) return;
+  if (G.bucketsFilled[index]) {
+    showToast('This bucket is already filled.');
+    return;
+  }
+  if (fireStep !== 0) {
+    showToast(fireStep === 1 ? 'Now fill it at the water cooler.' : 'Now throw the water on the fire!');
     return;
   }
 
   G.bucketsFilled[index] = true;
   G.bucketCount++;
   document.getElementById(`bucket-${index}`).classList.add('filled');
-
-  if (G.bucketCount === TOTAL_BUCKETS) {
-    showToast('All buckets filled. Now turn off the faucet.');
-  } else {
-    showToast(`Bucket filled. ${G.bucketCount} / ${TOTAL_BUCKETS}`);
-  }
+  fireStep = 1;
+  showToast('Bucket grabbed. Now fill it at the water cooler.');
 }
 
 function clickFaucet() {
-  if (G.faucetOff) {
-    showToast('Already off.');
-    return;
-  }
-  if (G.bucketCount < TOTAL_BUCKETS) {
-    showToast(`Fill all ${TOTAL_BUCKETS} buckets first.`);
+  if (G.waterDone) return;
+  if (fireStep !== 1) {
+    showToast(fireStep === 0 ? 'Grab a bucket first.' : 'Now throw the water on the fire!');
     return;
   }
 
-  G.faucetOff = true;
-  G.waterDone = true;
-  document.getElementById('faucet-hs').classList.add('off');
-  document.getElementById('puddle-overlay').style.opacity = '0';
-  showToast('Faucet off. The flood subsides.');
+  fireStep = 2;
+  showToast('Bucket filled! Now throw it on the fire.');
+}
+
+function clickFire() {
+  if (G.waterDone) return;
+  if (fireStep !== 2) {
+    showToast(fireStep === 0 ? 'Grab a bucket first.' : 'Fill the bucket at the water cooler first.');
+    return;
+  }
+
+  fireRound++;
+  fireStep = 0;
+
+  const fire = document.getElementById('puddle-overlay');
+
+  if (fireRound >= FIRE_ROUNDS) {
+    G.waterDone = true;
+    G.faucetOff = true;
+    document.getElementById('faucet-hs').classList.add('off');
+    document.getElementById('fire-hs').style.pointerEvents = 'none';
+    if (fire) fire.style.opacity = '0';
+    showToast('The fire is out. The exit is clear.');
+  } else {
+    if (fire) fire.style.opacity = String(1 - (fireRound / FIRE_ROUNDS));
+    showToast(`Fire weakening... ${fireRound} / ${FIRE_ROUNDS} buckets thrown.`);
+  }
 }
 
 

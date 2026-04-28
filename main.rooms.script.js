@@ -104,47 +104,72 @@ function clickPaper(index, el) {
 // ─────────────────────────────────────────────────────────
 
 function resetUpsideDown() {
-  G.udCount = 0;
+  document.getElementById('ud-count').textContent = 0;
   G.udDone  = false;
+  udStep = 0;
 
-  UD_ITEMS.forEach(id => {
+  UD_ORDER.forEach(function(id, index) {
     const el = document.getElementById(id);
-    if (el) el.classList.remove('righted');
+    if (!el) return;
+
+    // ✅ store original position ONCE
+    UD_ORIGINAL[id] = {
+      left: el.style.left,
+      top:  el.style.top
+    };
+
+    // reset position
+    el.style.left = UD_ORIGINAL[id].left;
+    el.style.top  = UD_ORIGINAL[id].top;
+
+    el.style.pointerEvents = '';
   });
-
-  const bg = document.getElementById('ud-bg-img');
-  if (bg) {
-    bg.style.transition = 'none';
-    bg.style.transform  = 'rotate(0deg)';
-    setTimeout(() => { bg.style.transition = 'transform 1s ease'; }, 50);
-  }
-
-  document.getElementById('ud-count').textContent = '0';
 }
 
-function rightItem(id, label) {
+function clickUD(id, index, el) {
   if (G.udDone) return;
 
-  const el = document.getElementById(id);
-  if (!el || el.classList.contains('righted')) return;
+  const original = {
+    left: el.style.left,
+    top: el.style.top,
+    transform: el.style.transform || ''
+  };
 
-  el.classList.add('righted');
-  G.udCount++;
-  document.getElementById('ud-count').textContent = G.udCount;
-  showToast(label + ' righted.');
+  const pos = UD_POSITIONS[index];
 
-  if (G.udCount >= TOTAL_UD_ITEMS) {
-    G.udDone = true;
-    const bg = document.getElementById('ud-bg-img');
-    if (bg) {
-      bg.style.transition = 'transform 1s ease';
-      bg.style.transform  = 'rotate(180deg)';
+  // 1️⃣ move + rotate first
+  el.style.left = pos.left + '%';
+  el.style.top  = pos.top + '%';
+  el.style.transform = `rotate(${pos.rot}deg)`;
+
+  setTimeout(() => {
+
+    if (id === UD_ORDER[udStep]) {
+
+      // ✅ correct → lock it
+      udStep++;
+      updateUDUI();
+      el.style.pointerEvents = 'none';
+
+      if (udStep === UD_ORDER.length) {
+        G.udDone = true;
+        addKeycard();
+
+        setTimeout(() => {
+          showModal('PUZZLE COMPLETE', 'Everything falls into place. A keycard appears.');
+        }, 250);
+      }
+
+    } else {
+
+      // ❌ wrong → revert everything
+      el.style.left = original.left;
+      el.style.top = original.top;
+      el.style.transform = original.transform;
+
     }
-    addKeycard();
-    setTimeout(() => {
-      showModal('ROOM RIGHTED', 'Everything is back in order. A keycard slides out from beneath the overturned desk.');
-    }, 1100);
-  }
+
+  }, 180);
 }
 
 

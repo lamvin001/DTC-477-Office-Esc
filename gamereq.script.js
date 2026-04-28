@@ -12,7 +12,6 @@
 */
 
 
-
 // ─────────────────────────────────────────────────────────
 // 1. SETUP
 // ─────────────────────────────────────────────────────────
@@ -22,12 +21,12 @@ const ROOMS = ['r-cubicle', 'r-paper', 'r-updown', 'r-chairs', 'r-water', 'r-wb'
 const TOTAL_KEYCARDS = 3;
 const TOTAL_CHAIRS   = 14;
 const ODD_PAPER      = 16;
-const TOTAL_BUCKETS  = 6;
+const TOTAL_BUCKETS  = 3;
 const TOTAL_UD_ITEMS = 5;
 
 const QUIZ = [
-  { question: 'How many chairs did you stack?',      options: ['10','12','14','16'], answer: '14'   },
-  { question: 'How many buckets did you fill?',      options: ['4','5','6','8'],    answer: '6'    },
+  { question: 'How many chairs did you stack?',      options: ['10','12','14','16'], answer: '14'  },
+  { question: 'How many buckets did you fill?',      options: ['1','2','3','4'],    answer: '3'   },
   { question: 'What word completed the whiteboard?', options: ['OUT','TRUTH','TIME','SPACE'], answer: 'TIME' }
 ];
 
@@ -58,13 +57,32 @@ const CHAIRS = [
 [70,0,8,24,180,1],
 [75,48,8,24,90,-1],
 [80,57,10,30,0,-1]
-]; // [left, top, width, height, rotation {0 = normal, 180 = upsidedown, 90 = sideways}, flip {1 = normal, -1 flipped}]
+]; 
 
 const BUCKETS = [
-  [55,40,12,19],[67,41,12,19],[50,54,12,19],[62,55,12,19],[55,67,11,18],[66,68,11,18]
+  [28,58,8,15],
+  [37,58,8,15],
+  [46,58,8,15]
 ];
 
-const UD_ITEMS = ['ud-lamp1','ud-lamp2','ud-desk','ud-cabinet','ud-desklamp'];
+const UD_ORDER = [
+  'ud-plant1',
+  'ud-desk',
+  'ud-cabinet',
+  'ud-plant2',
+  'ud-phone'
+];
+
+const UD_POSITIONS = [
+  { left: 13, top: 45, rot: 180 }, // plant1
+  { left: 70, top: 45, rot: 180 }, // plant2
+  { left: 35, top: 35, rot: 180 }, // desk
+  { left: 25, top: 65, rot: 180 }, // cabinet
+  { left: 29, top: 56, rot: 0   }  // phone
+];
+
+let udStep = 0;
+const UD_ORIGINAL = {};
 
 let G = {};
 
@@ -217,7 +235,7 @@ function onEnterRoom(roomId) {
       'r-paper':  'An odd one out wants nothing more than to blend in.',
       'r-updown': 'The world is not always right side up.',
       'r-chairs': 'An ordinary seat longs to reach for the heavens.',
-      'r-water':  'Fill what is empty. Stop what flows.',
+      'r-water':  'Where there is fire, there is a way. Fill what is empty.',
       'r-wb':     'The ever present force that marches forward.',
       'r-end':    'Good day to you, friend. But I must leave. The signal is getting spotty.'
     };
@@ -229,7 +247,6 @@ function onEnterRoom(roomId) {
     setTimeout(startQuiz, 300);
   }
 }
-
 
 // ─────────────────────────────────────────────────────────
 // 4. INVENTORY
@@ -333,4 +350,16 @@ function showToast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+document.addEventListener('dragstart', function(e) {
+  e.preventDefault();
+});
+
+function updateUDUI() {
+  document.getElementById('ud-count').textContent = udStep;
 }

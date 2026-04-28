@@ -26,6 +26,7 @@ html, body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  user-select: none;
 }
 
 #Credits {
@@ -72,7 +73,6 @@ html, body {
   max-width: 760px;
   width: 92%;
 }
-
 
 .story-inner {
   background: var(--ash);
@@ -282,7 +282,7 @@ html, body {
   padding: 8px 8px 10px;
   flex: 1;
   min-height: 0;
-  max-height: 290px;
+  max-height: 450px;
 }
 
 #ph-notch {
@@ -415,7 +415,7 @@ html, body {
   overflow: hidden;
   border-radius: 4px;
   border: 2px solid rgba(255, 180, 0, 0);
-  transition: border-color .15s, background .15s;
+  transition: left 0.25s ease, top 0.25s ease, border-color .15s, background .15s, transform 0.25s ease;
 }
 
 .ud-item:not(.righted):hover {
@@ -495,18 +495,7 @@ html, body {
   object-fit: contain;
   pointer-events: none;
   transform: scale(1.4);
-
 }
-
-/* .stack-plank {
-  width: 88%;
-  height: 13px;
-  background: linear-gradient(180deg, #7a7a7a 0%, #4a4a4a 100%);
-  border-radius: 2px;
-  border-top: 2px solid #999;
-  animation: plankIn 0.2s ease;
-  flex-shrink: 0;
-} */
 
 @keyframes plankIn {
   from { opacity: 0; transform: scaleX(0.6); }
@@ -530,7 +519,7 @@ html, body {
   white-space: nowrap;
 }
 
-/* ── WATER ROOM ── */
+/* ── FIRE ROOM ── */
 
 .bucket-hs {
   position: absolute;
@@ -572,10 +561,8 @@ html, body {
 
 #puddle-overlay {
   position: absolute;
-  z-index: 4;
+  z-index: 6;
   pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(20, 90, 200, 0.3) 50%, transparent 100%);
   transition: opacity 1.2s ease;
 }
 
