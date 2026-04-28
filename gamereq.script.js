@@ -65,19 +65,27 @@ const BUCKETS = [
 ];
 
 const UD_ORDER = [
-  'ud-plant1',
   'ud-desk',
   'ud-cabinet',
+  'ud-plant1',
   'ud-plant2',
   'ud-phone'
 ];
 
+// const UD_POSITIONS = [
+//   { left: 13, top: 45, rot: 180 }, //plant1
+//   { left: 70, top: 45, rot: 180 }, //plant2
+//   { left: 35, top: 35, rot: 180 }, //desk
+//   { left: 25, top: 65, rot: 180 }, //cabinet
+//   { left: 29, top: 56, rot: 0 } //phone
+// ];
+
 const UD_POSITIONS = [
-  { left: 13, top: 45, rot: 180 }, //plant1
-  { left: 70, top: 45, rot: 180 }, //plant2
-  { left: 35, top: 35, rot: 180 }, //desk
-  { left: 25, top: 65, rot: 180 }, //cabinet
-  { left: 29, top: 56, rot: 0 } //phone
+  { left: 1, top: 45, rot: 180 }, //plant1
+  { left: 65, top: 35, rot: 180 }, //plant2
+  { left: 30, top: 25, rot: 180 }, //desk
+  { left: 20, top: 55, rot: 180 }, //cabinet
+  { left: 24, top: 46, rot: 0 } //phone
 ];
 
 let udStep = 0;
