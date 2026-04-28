@@ -112,7 +112,7 @@ function resetUpsideDown() {
     const el = document.getElementById(id);
     if (!el) return;
 
-    // ✅ store original position ONCE
+    // store original position ONCE
     UD_ORIGINAL[id] = {
       left: el.style.left,
       top:  el.style.top
@@ -137,7 +137,7 @@ function clickUD(id, index, el) {
 
   const pos = UD_POSITIONS[index];
 
-  // 1️⃣ move + rotate first
+  // move + rotate first
   el.style.left = pos.left + '%';
   el.style.top  = pos.top + '%';
   el.style.transform = `rotate(${pos.rot}deg)`;
@@ -146,7 +146,7 @@ function clickUD(id, index, el) {
 
     if (id === UD_ORDER[udStep]) {
 
-      // ✅ correct → lock it
+      // correct → lock it
       udStep++;
       updateUDUI();
       el.style.pointerEvents = 'none';
@@ -162,7 +162,7 @@ function clickUD(id, index, el) {
 
     } else {
 
-      // ❌ wrong → revert everything
+      // wrong → revert everything
       el.style.left = original.left;
       el.style.top = original.top;
       el.style.transform = original.transform;
