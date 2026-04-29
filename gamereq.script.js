@@ -22,12 +22,12 @@ const ROOMS = ['r-cubicle', 'r-paper', 'r-updown', 'r-chairs', 'r-water', 'r-wb'
 const TOTAL_KEYCARDS = 3;
 const TOTAL_CHAIRS   = 14;
 const ODD_PAPER      = 16;
-const TOTAL_BUCKETS  = 6;
+const TOTAL_BUCKETS  = 3;
 const TOTAL_UD_ITEMS = 5;
 
 const QUIZ = [
   { question: 'How many chairs did you stack?',      options: ['10','12','14','16'], answer: '14'   },
-  { question: 'How many buckets did you fill?',      options: ['4','5','6','8'],    answer: '6'    },
+  { question: 'How many buckets did you fill?',      options: ['4','5','3','8'],    answer: '3'    },
   { question: 'What word completed the whiteboard?', options: ['OUT','TRUTH','TIME','SPACE'], answer: 'TIME' }
 ];
 
@@ -177,10 +177,9 @@ function navBack() {
   if (G.room > 0) goToRoom(G.room - 1);
 }
 
-// Returns null if navigation is allowed, or a denial message string if blocked.
 function getRoomBlockReason(nextIndex) {
   const nextRoom = ROOMS[nextIndex];
-  return null;
+// return null; here if you want to unlock between rooms
 
   // Must pick up phone before leaving room 0
   if (!G.phonePickedUp) {
@@ -191,24 +190,24 @@ function getRoomBlockReason(nextIndex) {
   const currentRoom = ROOMS[G.room];
 
   if (currentRoom === 'r-paper' && !G.paperDone) {
-    return 'Find the odd paper out before moving on.';
+    return 'Find the odd one out before moving on.';
   }
   if (currentRoom === 'r-updown' && !G.udDone) {
-    return 'Right all items in this room before moving on.';
+    return 'Right each item before moving on.';
   }
   if (currentRoom === 'r-chairs' && !G.chairsDone) {
     return 'Stack all the chairs before moving on.';
   }
   if (currentRoom === 'r-water' && !G.waterDone) {
-    return 'Fill all buckets and turn off the faucet before moving on.';
+    return 'Put out the fire before moving on.';
   }
   if (currentRoom === 'r-wb' && !G.wbDone) {
-    return 'Solve the whiteboard puzzle before moving on.';
+    return 'Solve the puzzle before moving on.';
   }
 
   // Final room keycard check
   if (nextRoom === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
-    return null; // handled separately by showDenied()
+    return null; 
   }
 
   return null;
@@ -242,9 +241,9 @@ function onEnterRoom(roomId) {
       'r-paper':  'An odd one out wants nothing more than to blend in.',
       'r-updown': 'The world is not always right side up.',
       'r-chairs': 'An ordinary seat longs to reach for the heavens.',
-      'r-water':  'Fill what is empty. Stop what flows.',
+      'r-water':  'Fill what is empty. Stop what burns.',
       'r-wb':     'The ever present force that marches forward.',
-      'r-end':    'Good day to you, friend. But I must leave. The signal is getting spotty.'
+      'r-end':    'Good day to you, friend. I must leave. The signal is getting spotty.'
     };
 
     if (hints[roomId]) sendMessage('them', hints[roomId]);
