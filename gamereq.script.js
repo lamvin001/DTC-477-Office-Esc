@@ -312,6 +312,8 @@ function sendMessage(who, text) {
 // 6. HELPERS
 // ─────────────────────────────────────────────────────────
 
+const audio = new Audio('audio/click2.mp3');
+
 function showModal(title, body) {
   document.getElementById('m-title').textContent = title;
   document.getElementById('m-body').textContent  = body;
@@ -370,3 +372,7 @@ document.addEventListener('dragstart', function(e) {
 function updateUDUI() {
   document.getElementById('ud-count').textContent = udStep;
 }
+
+window.addEventListener('click', (event) => {
+  audio.play();
+});

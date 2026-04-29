@@ -20,7 +20,7 @@ function pickupPhone() {
   showToast('You pick up the phone.');
 
   setTimeout(() => {
-    sendMessage('them', 'Some say Watchers detest unknown variables. Let us chat for 7392 hours of our life to come.');
+    sendMessage('them', 'Some say Watchers detest unknown variables. Please, exit to the right.');
   }, 700);
 }
 
