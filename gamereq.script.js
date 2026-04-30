@@ -1,20 +1,38 @@
-// CHAT URLS
+/*
+  ═══════════════════════════════════════════════════════════════
+  OFFICE ESC — gamereq.script.js
+  Core game state, constants, screen control, navigation,
+  inventory, phone system, and shared helpers.
 
-/* OFFICE ESC — SETUP
+  BUILD NOTES:
+  Office Esc is a point-and-click browser escape room built with
+  vanilla HTML, CSS, and JavaScript — no frameworks or build tools.
+  Art assets were created by the team. Google Fonts (Bebas Neue,
+  Crimson Pro, Share Tech Mono) are loaded via CDN. Audio uses the
+  native Web Audio API. The game is split across three script files:
+  gamereq.script.js (core/shared), main.rooms.script.js (rooms 0–3),
+  and side.rooms.script.js (rooms 4–5 and quiz).
 
-  SECTIONS:
-  1. SETUP      — constants and game state
-  2. SCREENS    — show/hide intro, game, outro
-  3. NAVIGATION — move between rooms
-  4. INVENTORY  — keycards and key
-  5. PHONE      — chat bubbles
-  6. HELPERS    — modal, toast, access denied
+  LOGIC OVERVIEW:
+  1. On "Start Game", resetGame() zeroes all state, then each room's
+     build/reset function populates its DOM elements from data arrays.
+  2. goToRoom(index) swaps the visible .room div and calls onEnterRoom()
+     which fires a phone hint the first time a room is visited.
+  3. navFwd() checks getRoomBlockReason() and, if all 3 keycards are
+     missing, calls showDenied() instead of advancing to r-end.
+  4. Each puzzle function updates the G state object and calls
+     addKeycard() or G.hasKey = true when solved.
+  5. updateInventory() reads G and re-renders the sidebar slots.
+  6. The quiz in r-end runs sequentially; a wrong answer calls
+     failQuiz() which shows the denied overlay.
+  7. nudgeNextRoom() fires the standard grey toast with a short delay
+     so it never overlaps the keycard or puzzle-completion toast.
+  ═══════════════════════════════════════════════════════════════
 */
 
 
-
 // ─────────────────────────────────────────────────────────
-// 1. SETUP
+// 1. SETUP — constants and shared game-state object
 // ─────────────────────────────────────────────────────────
 
 const ROOMS = ['r-cubicle', 'r-paper', 'r-updown', 'r-chairs', 'r-water', 'r-wb', 'r-end'];
@@ -27,43 +45,44 @@ const TOTAL_UD_ITEMS = 5;
 
 const QUIZ = [
   { question: 'How many chairs did you stack?',      options: ['10','12','14','16'], answer: '14'   },
-  { question: 'How many buckets did you fill?',      options: ['4','5','3','8'],    answer: '3'    },
-  { question: 'What word completed the whiteboard?', options: ['OUT','TRUTH','TIME','SPACE'], answer: 'TIME' }
+  { question: 'How many buckets did you fill?',      options: ['3','5','4','8'],    answer: '3'    },
+  { question: 'What word completed the whiteboard?', options: ['OUT','TRUTH','SPACE','TIME'], answer: 'TIME' }
 ];
 
 const PAPERS = [
-  // [left, top, width, height, rotation]
-  [28,58,7,13,-12],[32,65,7,13,5],[35,55,7,13,18],[30,72,7,13,-7],[38,62,7,13,22],
-  [42,58,7,13,-15],[40,70,7,13,8],[45,64,7,13,-20],[48,57,7,13,14],[44,74,7,13,-5],
-  [50,62,7,13,25],[52,72,7,13,-18],[55,58,7,13,10],[57,68,7,13,-8],[60,62,7,13,20],
-  [62,74,7,13,-14],
-  [36,63,8,14,3],  // the ! paper (has keycard)
-  [48,70,7,13,16],[53,64,7,13,-22],[58,74,7,13,7],[63,60,7,13,-10],[65,70,7,13,19],
-  [43,60,7,13,-3],[67,64,7,13,-16],[38,70,7,13,12],[56,60,7,13,-25],[61,67,7,13,6],[46,67,7,13,-9]
+  [37,54,11,17,-12],[41,61,11,17,5],[44,51,11,17,18],[39,68,11,17,-7],[47,58,11,17,22],
+  [51,54,11,17,-15],[49,66,11,17,8],[54,60,11,17,-20],[57,53,11,17,14],[53,70,11,17,-5],
+  [59,58,11,17,25],[61,68,11,17,-18],[64,54,11,17,10],[66,64,11,17,-8],[69,58,11,17,20],
+  [71,70,11,17,-14],
+  [45,59,11,17,3],  // index 16 (ODD_PAPER) — has keycard on back
+  [57,66,11,17,16],[62,60,11,17,-22],[67,70,11,17,7],[72,56,11,17,-10],[74,66,11,17,19],
+  [52,56,11,17,-3],[76,60,11,17,-16],[47,66,11,17,12],[65,56,11,17,-25],[70,63,11,17,6],[55,63,11,17,-9]
 ];
 
+// Each entry: [left%, top%, width%, height%, rotation(deg), flipX(1 or -1)]
 const CHAIRS = [
-[15,70,10,26,0,1],
-[15,10,10,26,60,1],
-[23,47,10,26,0,-1],
-[30,70,10,30,270,1],
-[35,10,8,24,90,-1],
-[37,45,10,26,0,1],
-[45,30,8,24,180,-1],
-[50,50,10,26,0,-1],
-[55,5,10,26,330,1],
-[65,30,8,24,45,1],
-[65,50,8,24,225,-1],
-[65,60,10,26,0,1],
-[70,0,8,24,180,1],
-[75,48,8,24,90,-1],
-[80,57,10,30,0,-1]
-]; // [left, top, width, height, rotation {0 = normal, 180 = upsidedown, 90 = sideways}, flip {1 = normal, -1 flipped}]
+  [15,70,10,26,0,1],
+  [15,10,10,26,60,1],
+  [23,47,10,26,0,-1],
+  [30,70,10,30,270,1],
+  [35,10,8,24,90,-1],
+  [37,45,10,26,0,1],
+  [45,30,8,24,180,-1],
+  [50,50,10,26,0,-1],
+  [55,5,10,26,330,1],
+  [65,30,8,24,45,1],
+  [65,50,8,24,225,-1],
+  [65,60,10,26,0,1],
+  [70,0,8,24,180,1],
+  [75,48,8,24,90,-1],
+  [80,57,10,30,0,-1]
+];
 
 const BUCKETS = [
   [55,40,12,19],[67,41,12,19],[50,54,12,19],[62,55,12,19],[55,67,11,18],[66,68,11,18]
 ];
 
+// Correct click order for the upside-down room
 const UD_ORDER = [
   'ud-desk',
   'ud-cabinet',
@@ -72,20 +91,13 @@ const UD_ORDER = [
   'ud-phone'
 ];
 
-// const UD_POSITIONS = [
-//   { left: 13, top: 45, rot: 180 }, //plant1
-//   { left: 70, top: 45, rot: 180 }, //plant2
-//   { left: 35, top: 35, rot: 180 }, //desk
-//   { left: 25, top: 65, rot: 180 }, //cabinet
-//   { left: 29, top: 56, rot: 0 } //phone
-// ];
-
+// Target positions/rotations after righting each item
 const UD_POSITIONS = [
-  { left: 1, top: 45, rot: 180 }, //plant1
-  { left: 65, top: 35, rot: 180 }, //plant2
-  { left: 30, top: 25, rot: 180 }, //desk
-  { left: 20, top: 55, rot: 180 }, //cabinet
-  { left: 24, top: 46, rot: 0 } //phone
+  { left: 1,  top: 45, rot: 180 }, // plant1
+  { left: 65, top: 35, rot: 180 }, // plant2
+  { left: 30, top: 25, rot: 180 }, // desk
+  { left: 20, top: 55, rot: 180 }, // cabinet
+  { left: 24, top: 46, rot: 0   }  // phone
 ];
 
 let udStep = 0;
@@ -119,13 +131,11 @@ function resetGame() {
 
 
 // ─────────────────────────────────────────────────────────
-// 2. SCREENS
+// 2. SCREENS — show/hide intro, game, outro
 // ─────────────────────────────────────────────────────────
 
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
@@ -140,7 +150,7 @@ function startGame() {
   document.getElementById('ph-msgs').innerHTML =
     '<div class="bbl placeholder">Pick up the phone...</div>';
 
-  document.getElementById('hs-phone').style.display = '';
+  document.getElementById('hs-phone').style.display        = '';
   document.getElementById('hs-drawer').style.pointerEvents = '';
 
   showScreen('screen-game');
@@ -152,18 +162,13 @@ function replayGame() { window.location.reload(); }
 
 
 // ─────────────────────────────────────────────────────────
-// 3. NAVIGATION
+// 3. NAVIGATION — move between rooms
 // ─────────────────────────────────────────────────────────
 
 function goToRoom(index) {
   G.room = index;
-
-  document.querySelectorAll('.room').forEach(r => {
-    r.classList.remove('active');
-  });
-
+  document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
   document.getElementById(ROOMS[index]).classList.add('active');
-
   updateArrows();
   onEnterRoom(ROOMS[index]);
 }
@@ -178,37 +183,23 @@ function navBack() {
 }
 
 function getRoomBlockReason(nextIndex) {
-  const nextRoom = ROOMS[nextIndex];
-// return null; here if you want to unlock between rooms
+  // add return null; here if you want to unlock rooms
+  return null;
 
-  // Must pick up phone before leaving room 0
   if (!G.phonePickedUp) {
     return 'Pick up the phone before moving on.';
   }
 
-  // Puzzle completion checks per room (must complete current room before advancing)
   const currentRoom = ROOMS[G.room];
 
-  if (currentRoom === 'r-paper' && !G.paperDone) {
-    return 'Find the odd one out before moving on.';
-  }
-  if (currentRoom === 'r-updown' && !G.udDone) {
-    return 'Right each item before moving on.';
-  }
-  if (currentRoom === 'r-chairs' && !G.chairsDone) {
-    return 'Stack all the chairs before moving on.';
-  }
-  if (currentRoom === 'r-water' && !G.waterDone) {
-    return 'Put out the fire before moving on.';
-  }
-  if (currentRoom === 'r-wb' && !G.wbDone) {
-    return 'Solve the puzzle before moving on.';
-  }
+  if (currentRoom === 'r-paper'  && !G.paperDone)   return 'Find the odd one out before moving on.';
+  if (currentRoom === 'r-updown' && !G.udDone)       return 'Right each item before moving on.';
+  if (currentRoom === 'r-chairs' && !G.chairsDone)   return 'Stack all the chairs before moving on.';
+  if (currentRoom === 'r-water'  && !G.waterDone)    return 'Put out the fire before moving on.';
+  if (currentRoom === 'r-wb'     && !G.wbDone)       return 'Solve the puzzle before moving on.';
 
-  // Final room keycard check
-  if (nextRoom === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
-    return null; 
-  }
+  const nextRoom = ROOMS[nextIndex];
+  if (nextRoom === 'r-end' && G.keycards < TOTAL_KEYCARDS) return null;
 
   return null;
 }
@@ -218,10 +209,7 @@ function navFwd() {
   if (next >= ROOMS.length) return;
 
   const blockMsg = getRoomBlockReason(next);
-  if (blockMsg) {
-    showToast(blockMsg);
-    return;
-  }
+  if (blockMsg) { showToast(blockMsg); return; }
 
   if (ROOMS[next] === 'r-end' && G.keycards < TOTAL_KEYCARDS) {
     showDenied();
@@ -256,7 +244,7 @@ function onEnterRoom(roomId) {
 
 
 // ─────────────────────────────────────────────────────────
-// 4. INVENTORY
+// 4. INVENTORY — keycards and key
 // ─────────────────────────────────────────────────────────
 
 function updateInventory() {
@@ -290,7 +278,7 @@ function addKeycard() {
 
 
 // ─────────────────────────────────────────────────────────
-// 5. PHONE
+// 5. PHONE — chat bubbles
 // ─────────────────────────────────────────────────────────
 
 function sendMessage(who, text) {
@@ -309,7 +297,7 @@ function sendMessage(who, text) {
 
 
 // ─────────────────────────────────────────────────────────
-// 6. HELPERS
+// 6. HELPERS — modal, toast, access denied
 // ─────────────────────────────────────────────────────────
 
 const audio = new Audio('audio/click2.mp3');
@@ -325,7 +313,8 @@ function closeModal() {
 }
 
 function showDenied() {
-  document.getElementById('denied-msg').textContent = 'You must obtain all 3 keycards to enter this room.';
+  document.getElementById('denied-msg').textContent =
+    'You must obtain all 3 keycards to enter this room.';
 
   const inv = document.getElementById('denied-inv');
   inv.innerHTML = '';
@@ -349,7 +338,12 @@ function showDenied() {
 
 function closeDenied() {
   document.getElementById('denied-ov').classList.remove('on');
-  if (G.quizFailed) replayGame();
+
+  if (G.quizFailed) {
+    G.quizFailed = false;
+    G.quizIdx    = 0;
+    startQuiz();
+  }
 }
 
 let toastTimer;
@@ -361,18 +355,21 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-document.addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-});
-
-document.addEventListener('dragstart', function(e) {
-  e.preventDefault();
-});
+let nudgeTimer;
+function nudgeNextRoom(delay) {
+  clearTimeout(nudgeTimer);
+  nudgeTimer = setTimeout(() => {
+    showToast('Move to the next room.');
+  }, delay !== undefined ? delay : 3200);
+}
 
 function updateUDUI() {
   document.getElementById('ud-count').textContent = udStep;
 }
 
-window.addEventListener('click', (event) => {
-  audio.play();
-});
+// Prevent right-click and drag on game assets
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('dragstart',   e => e.preventDefault());
+
+// Play click sound on every interaction
+window.addEventListener('click', () => audio.play());

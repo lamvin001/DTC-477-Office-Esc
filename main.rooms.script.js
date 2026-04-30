@@ -1,8 +1,36 @@
+/*
+  ═══════════════════════════════════════════════════════════════
+  OFFICE ESC — main.rooms.script.js
+  Puzzle logic for rooms 0–3:
+    Room 0 — Cubicle   (phone pickup, drawer/key)
+    Room 1 — Paper     (find the odd paper, earn keycard)
+    Room 2 — Upside-Down (click items in correct order)
+    Room 3 — Chairs    (stack all 14 chairs)
+
+  LOGIC STEPS:
+  - Room 0: pickupPhone() enables the phone UI and triggers the
+    first hint. clickDrawer() requires G.hasKey; uses the key,
+    hides the lock, and awards keycard 3.
+  - Room 1: buildPapers() renders all PAPERS array entries as
+    clickable divs. The paper image renders at 100% of the div
+    so it stays perfectly inside the yellow outline box.
+    clickPaper() checks if the clicked index matches ODD_PAPER (16).
+    Wrong papers bounce; correct paper awards keycard 1.
+  - Room 2: resetUpsideDown() stores original positions. clickUD()
+    moves the item then checks if it matches UD_ORDER[udStep].
+    Correct locks the item; wrong reverts it. Completing all 5
+    awards keycard 2.
+  - Room 3: resetChairs() places 14 chairs via the CHAIRS array.
+    clickChair() animates a chair to the stack zone. Completing
+    all 14 shows a modal.
+  ═══════════════════════════════════════════════════════════════
+*/
+
+
+
 // ─────────────────────────────────────────────────────────
 // ROOM 0 — CUBICLE
 // ─────────────────────────────────────────────────────────
-
-const unlockSound = new Audio('audio/unlock.mp3');
 
 function pickupPhone() {
   if (G.phonePickedUp) {
@@ -12,11 +40,8 @@ function pickupPhone() {
 
   G.phonePickedUp = true;
 
-  // Remove phone from desk
-  document.getElementById('hs-phone').style.display = 'none';
-  document.getElementById('phone-on-desk').style.display = 'none';
-
-  // Clear the placeholder text
+  document.getElementById('hs-phone').style.display         = 'none';
+  document.getElementById('phone-on-desk').style.display    = 'none';
   document.getElementById('ph-msgs').innerHTML = '';
 
   showToast('You pick up the phone.');
@@ -36,13 +61,14 @@ function clickDrawer() {
     return;
   }
 
+  // Consume the key and give keycard 3
   G.keyUsed = true;
   G.hasKey  = false;
-  unlockSound.play();
   document.getElementById('lock-img').style.display = 'none';
   updateInventory();
   addKeycard();
-  showModal('DRAWER OPENED', 'You slide the key into the lock. Inside the drawer lies the third keycard, sealed in a plain envelope.');
+  showModal('DRAWER OPENED',
+    'You slide the key into the lock. Inside the drawer lies the third keycard, sealed in a plain envelope.');
 }
 
 
@@ -57,17 +83,17 @@ function buildPapers() {
 
   PAPERS.forEach((pos, index) => {
     const wrapper = document.createElement('div');
-    wrapper.className    = 'paper-hs';
-    wrapper.style.left   = pos[0] + '%';
-    wrapper.style.top    = pos[1] + '%';
-    wrapper.style.width  = pos[2] + '%';
-    wrapper.style.height = pos[3] + '%';
+    wrapper.className       = 'paper-hs';
+    wrapper.style.left      = pos[0] + '%';
+    wrapper.style.top       = pos[1] + '%';
+    wrapper.style.width     = pos[2] + '%';
+    wrapper.style.height    = pos[3] + '%';
     wrapper.style.transform = `rotate(${pos[4]}deg)`;
 
     const img = document.createElement('img');
-    img.src   = index === ODD_PAPER ? 'img/exclamation.png' : 'img/question.png';
-    img.alt   = index === ODD_PAPER ? '!' : '?';
-    img.style.cssText = 'width:200%;height:200%;object-fit:contain;pointer-events:none;';
+    img.src = index === ODD_PAPER ? 'img/exclamation.png' : 'img/question.png';
+    img.alt = index === ODD_PAPER ? '!' : '?';
+    img.style.cssText = 'width:100%;height:100%;object-fit:fill;pointer-events:none;display:block;';
 
     wrapper.appendChild(img);
     wrapper.addEventListener('click', () => clickPaper(index, wrapper));
@@ -79,6 +105,7 @@ function clickPaper(index, el) {
   if (G.paperDone) return;
 
   if (index === ODD_PAPER) {
+    // Correct paper — keycard, show modal, then nudge
     el.classList.add('clicked');
     G.paperDone = true;
 
@@ -89,14 +116,17 @@ function clickPaper(index, el) {
 
     setTimeout(() => {
       addKeycard();
-      showModal('FOUND IT', 'You flip the paper over. On the back, a keycard is taped flat. You peel it off carefully.');
+      showModal('FOUND IT',
+        'You flip the paper over. On the back, a keycard is taped flat. You peel it off carefully.');
       found.style.display = 'none';
+      nudgeNextRoom(3200);
     }, 450);
 
   } else {
+    // Wrong paper — shake and hint
     const angle = (Math.random() * 16 - 8).toFixed(1);
     el.style.transform = `rotate(${angle}deg) scale(.91)`;
-    setTimeout(() => { el.style.transform = ''; }, 180);
+    setTimeout(() => { el.style.transform = `rotate(${PAPERS[index][4]}deg)`; }, 180);
     showToast('Just a question mark. Keep looking.');
   }
 }
@@ -108,23 +138,17 @@ function clickPaper(index, el) {
 
 function resetUpsideDown() {
   document.getElementById('ud-count').textContent = 0;
-  G.udDone  = false;
-  udStep = 0;
+  G.udDone = false;
+  udStep   = 0;
 
-  UD_ORDER.forEach(function(id, index) {
+  UD_ORDER.forEach(function(id) {
     const el = document.getElementById(id);
     if (!el) return;
 
-    // store original position ONCE
-    UD_ORIGINAL[id] = {
-      left: el.style.left,
-      top:  el.style.top
-    };
+    UD_ORIGINAL[id] = { left: el.style.left, top: el.style.top };
 
-    // reset position
-    el.style.left = UD_ORIGINAL[id].left;
-    el.style.top  = UD_ORIGINAL[id].top;
-
+    el.style.left          = UD_ORIGINAL[id].left;
+    el.style.top           = UD_ORIGINAL[id].top;
     el.style.pointerEvents = '';
   });
 }
@@ -133,23 +157,19 @@ function clickUD(id, index, el) {
   if (G.udDone) return;
 
   const original = {
-    left: el.style.left,
-    top: el.style.top,
+    left:      el.style.left,
+    top:       el.style.top,
     transform: el.style.transform || ''
   };
 
   const pos = UD_POSITIONS[index];
 
-  // move + rotate first
-  el.style.left = pos.left + '%';
-  el.style.top  = pos.top + '%';
+  el.style.left      = pos.left + '%';
+  el.style.top       = pos.top  + '%';
   el.style.transform = `rotate(${pos.rot}deg)`;
 
   setTimeout(() => {
-
     if (id === UD_ORDER[udStep]) {
-
-      // correct → lock it
       udStep++;
       updateUDUI();
       el.style.pointerEvents = 'none';
@@ -157,21 +177,17 @@ function clickUD(id, index, el) {
       if (udStep === UD_ORDER.length) {
         G.udDone = true;
         addKeycard();
-
         setTimeout(() => {
           showModal('PUZZLE COMPLETE', 'Everything falls into place. A keycard appears.');
         }, 250);
+        nudgeNextRoom(3200);
       }
 
     } else {
-
-      // wrong → revert everything
-      el.style.left = original.left;
-      el.style.top = original.top;
+      el.style.left      = original.left;
+      el.style.top       = original.top;
       el.style.transform = original.transform;
-
     }
-
   }, 180);
 }
 
@@ -205,18 +221,20 @@ function resetChairs() {
 function clickChair(index) {
   const el = document.getElementById('chair-' + index);
 
-  if (!el || el.classList.contains('moving') || el.classList.contains('stacked') || G.chairsDone) return;
+  if (!el || el.classList.contains('moving') ||
+      el.classList.contains('stacked') || G.chairsDone) return;
 
   G.chairCount++;
   el.style.zIndex = G.chairCount;
-  document.getElementById('stack-counter').textContent = 'STACKED: ' + G.chairCount + ' / ' + TOTAL_CHAIRS;
+  document.getElementById('stack-counter').textContent =
+    'STACKED: ' + G.chairCount + ' / ' + TOTAL_CHAIRS;
 
   const stackY = Math.max(20, 85 - G.chairCount * 1.2);
 
   el.classList.add('moving');
   el.style.left       = '40%';
   el.style.top        = stackY - 25 + '%';
-  el.style.transform  = `rotate(0deg) scaleX(1)`;
+  el.style.transform  = 'rotate(0deg) scaleX(1)';
   el.style.width      = '20%';
   el.style.height     = '26%';
   el.style.border     = '0';
@@ -238,5 +256,6 @@ function clickChair(index) {
     setTimeout(() => {
       showModal('ALL CHAIRS STACKED', 'All chairs are stacked. Move to the next room.');
     }, 700);
+    nudgeNextRoom(3200);
   }
 }
