@@ -2,6 +2,8 @@
 // ROOM 0 — CUBICLE
 // ─────────────────────────────────────────────────────────
 
+const unlockSound = new Audio('audio/unlock.mp3');
+
 function pickupPhone() {
   if (G.phonePickedUp) {
     showToast('You already have the phone.');
@@ -36,6 +38,7 @@ function clickDrawer() {
 
   G.keyUsed = true;
   G.hasKey  = false;
+  unlockSound.play();
   document.getElementById('lock-img').style.display = 'none';
   updateInventory();
   addKeycard();

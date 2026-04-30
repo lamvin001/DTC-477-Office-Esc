@@ -88,6 +88,8 @@ function clickFire() {
 // ROOM 5 — WHITEBOARD ROOM
 // ─────────────────────────────────────────────────────────
 
+const keySound = new Audio('audio/keyget.mp3');
+
 const WB_ITEMS = ['wbo-clock', 'wbo-window', 'wbo-folder'];
 
 function resetWhiteboard() {
@@ -112,6 +114,7 @@ function pickWb(word, id) {
     G.wbDone = true;
     G.hasKey = true;
     updateInventory();
+    keySound.play();
     setTimeout(() => {
       showModal('CORRECT',
         'Watchers see everything, but they cannot see TIME. ' +
