@@ -184,7 +184,6 @@ function navBack() {
 
 function getRoomBlockReason(nextIndex) {
   // add return null; here if you want to unlock rooms
-  return null;
 
   if (!G.phonePickedUp) {
     return 'Pick up the phone before moving on.';
