@@ -84,10 +84,10 @@ const BUCKETS = [
 
 // Correct click order for the upside-down room
 const UD_ORDER = [
-  'ud-desk',
-  'ud-cabinet',
   'ud-plant1',
   'ud-plant2',
+  'ud-desk',
+  'ud-cabinet',
   'ud-phone'
 ];
 
@@ -226,7 +226,7 @@ function onEnterRoom(roomId) {
 
     const hints = {
       'r-paper':  'An odd one out wants nothing more than to blend in.',
-      'r-updown': 'The world is not always right side up.',
+      'r-updown': 'Life settles first, then work begins—what’s kept comes next; when the call is made, everything is in order',
       'r-chairs': 'An ordinary seat longs to reach for the heavens.',
       'r-water':  'Fill what is empty. Stop what burns.',
       'r-wb':     'The ever present force that marches forward.',
