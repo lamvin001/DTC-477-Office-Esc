@@ -6,27 +6,11 @@
     Room 5 — Whiteboard  (click the correct word object)
     Room 6 — End / Quiz  (3-question sudden quiz)
 
-  LOGIC STEPS:
-  - Room 4: Three-step loop per bucket: (1) click a bucket to grab
-    it (fireStep → 1), (2) click the faucet to fill it (fireStep → 2),
-    (3) click the fire to throw it (fireStep → 0, fireRound++).
-    After FIRE_ROUNDS (3) throws the fire opacity fades to 0 and
-    G.waterDone is set. nudgeNextRoom() fires on completion.
-  - Room 5: pickWb() checks the clicked object's word against 'TIME'.
-    Correct → sets G.hasKey = true, updates inventory, shows modal,
-    and calls nudgeNextRoom(). Wrong → brief red flash + revert.
-  - Room 6: startQuiz() initialises the index and calls showQuestion().
-    answerQuestion() compares chosen vs q.answer. Correct advances;
-    wrong calls failQuiz() which shows the denied overlay (fully
-    black background, z-index above the quiz layer).
-
   DEVLOPED BY: Sonia
-  CONTRIBUTORS: Nakai
-  Chat URL: 
+  CONTRIBUTORS: 
+  Chat URL: https://chatgpt.com/share/69f9a61b-da6c-8327-bc25-f0d7c934020a
   ═══════════════════════════════════════════════════════════════
 */
-
-
 
 // ─────────────────────────────────────────────────────────
 // ROOM 4 — FIRE ROOM
