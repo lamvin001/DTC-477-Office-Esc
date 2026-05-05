@@ -4,15 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About — Office Esc</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --blood: #6b0f0f;
-      --ash: #222;
+      --ash: #1c1c1c;
       --green: #2d7a3a;
       --green2: #3aaa4e;
       --mono: 'Share Tech Mono', monospace;
@@ -20,17 +23,26 @@
       --serif: 'Crimson Pro', serif;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     html, body {
       width: 100%;
-      height: 100%;
+      min-height: 100%;
       background: #000;
       font-family: var(--serif);
       display: flex;
       justify-content: center;
-      align-items: center;
-      overflow: hidden;
+      align-items: flex-start;
+      overflow-y: auto;
+      font-size: 18px;
+    }
+
+    body {
+      padding: 40px 0;
     }
 
     .scene-bg {
@@ -39,7 +51,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.45;
+      opacity: 0.35;
       z-index: 0;
     }
 
@@ -47,33 +59,34 @@
       position: relative;
       z-index: 2;
       background: var(--blood);
-      padding: 12px;
-      max-width: 780px;
+      padding: 10px;
+      max-width: 820px;
       width: 92%;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
     }
 
     .about-inner {
       background: var(--ash);
-      padding: 40px 48px 44px;
+      padding: 44px 52px;
+      border: 1px solid #2a2a2a;
     }
 
     .about-title {
       font-family: var(--display);
       font-size: 4rem;
       color: #fff;
-      letter-spacing: 4px;
-      text-shadow: 2px 2px 0 var(--blood), 4px 4px 0 #400;
-      margin-bottom: 4px;
+      letter-spacing: 5px;
+      text-shadow: 2px 2px 0 var(--blood), 5px 5px 0 #200;
       text-align: center;
     }
 
     .about-sub {
       font-family: var(--mono);
       font-size: 0.7rem;
-      color: #555;
-      letter-spacing: 3px;
+      color: #777;
+      letter-spacing: 4px;
       text-align: center;
-      margin-bottom: 28px;
+      margin-top: 6px;
       text-transform: uppercase;
     }
 
@@ -81,43 +94,61 @@
       width: 100%;
       height: 1px;
       background: linear-gradient(to right, transparent, var(--blood), transparent);
-      margin-bottom: 28px;
+      margin: 28px 0;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-weight: bold;
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      color: var(--green2);
+      text-transform: uppercase;
+      margin-top: 28px;
+      margin-bottom: 10px;
+      border-left: 3px solid var(--blood);
+      padding-left: 10px;
     }
 
     .about-desc {
       font-size: 1.05rem;
-      color: #ccc;
+      color: #d0d0d0;
       line-height: 1.8;
-      text-align: center;
-      margin-bottom: 32px;
+      text-align: left;
+      margin-bottom: 18px;
     }
 
+    /* CREDITS */
     .credits-title {
       font-family: var(--mono);
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       letter-spacing: 4px;
-      color: #555;
+      color: #666;
       text-transform: uppercase;
       text-align: center;
-      margin-bottom: 16px;
+      margin: 30px 0 16px;
     }
 
     .credits-grid {
-      display: flex;
+      display: block;
       justify-content: center;
-      gap: 16px;
+      gap: 18px;
       flex-wrap: wrap;
-      margin-bottom: 36px;
     }
 
     .credit-card {
       background: #111;
       border: 1px solid #2a2a2a;
       border-top: 2px solid var(--blood);
-      margin-left: 28px;
-      padding: 16px 22px;
-      min-width: 140px;
+      padding: 18px 20px;
+      min-width: 160px;
       text-align: center;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .credit-card:hover {
+      transform: translateY(-3px);
+      border-color: #3a3a3a;
     }
 
     .credit-name {
@@ -129,17 +160,30 @@
 
     .credit-role {
       font-family: var(--mono);
-      font-size: 0.55rem;
-      color: #555;
+      font-size: 0.6rem;
+      color: #777;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-top: 4px;
+      margin-top: 6px;
+      margin-bottom: 14px;
+      
     }
 
+    .credit-work {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      color: #bdbdbd;
+      margin-top: 10px;
+      margin-bottom: 14px;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    /* BUTTON */
     .btn-back {
       display: block;
       width: fit-content;
-      margin: 0 auto;
+      margin: 40px auto 0;
       background: var(--green);
       color: #fff;
       font-family: var(--serif);
@@ -149,16 +193,40 @@
       border: none;
       border-radius: 999px;
       cursor: pointer;
-      transition: background .18s, transform .1s;
+      transition: 0.2s ease;
       text-decoration: none;
     }
 
     .btn-back:hover {
       background: var(--green2);
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
+    
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      text-align: left;
+    }
+
+    li {
+      margin-bottom: 8px;
+      color: var(--green2);
+    }
+
+    a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    
+
   </style>
 </head>
+
 <body>
 
   <img class="scene-bg" src="img/intro.png" alt="Background">
@@ -167,33 +235,111 @@
     <div class="about-inner">
 
       <div class="about-title">OFFICE ESC</div>
-      <div class="about-sub">Point &amp; Click Escape Room</div>
+      <div class="about-sub">Point & Click Escape Room</div>
+
       <div class="divider"></div>
 
+      <div class="section-title">Project Description</div>
       <p class="about-desc">
         A classic point-and-click escape room inspired by the Liminal Horror aesthetic.
         You've been locked inside an abandoned office building. Solve a puzzle in each
         room to find your brother and escape.
       </p>
 
+      <div class="section-title">GitHub Collaboration</div>
+      <p class="about-desc">
+        This project was built collaboratively using GitHub, 
+        with each developer responsible for different areas within the project. 
+        Shared resources like images and audio were organized into dedicated folders. 
+        Regular commits and branches ensured that all updates and contributions were consistently 
+        merged into the repository. Using GitHub helped streamline collaboration, manage files efficiently, 
+        and track progress throughout development.
+      </p>
+
+      <div class="section-title">Credits</div>
+      <p class="about-desc">
+        All images and sound effects were sourced from ...
+      </p>
+
+      <div class="section-title">AI Usage</div>
+      <p class="about-desc">
+        AI was used throughout the development of this project to support
+        code development. The following AI tools  used was ChatGPT.
+      </p>
+      
+      <div class="links">
+      <div class="section-title">AI Chat Logs</div>
+      <p class="about-desc">
+        Documentation of AI-assisted development sessions:
+      </p>
+      <ul>
+        <li><a href="https://chatgpt.com/share/69f39ee4-0f0c-83e8-a6fd-7732da60944f">
+          Chat Log 1 </a></li>
+          <li><a href="https://chatgpt.com/share/69f9346e-851c-8329-8a12-09bfa69d082e">
+          Chat Log 2</a></li>
+          <li><a href="link goes here">
+          Chat Log 3</a></li>
+      </ul>
+      </div>
+
       <div class="credits-title">— Credits —</div>
+
       <div class="credits-grid">
-        <div class="credit-card">
-          <div class="credit-name">Vincent</div>
-          <div class="credit-role"> Lead Coder</div>
-        </div>
-        <div class="credit-card">
-          <div class="credit-name">Nakai</div>
-          <div class="credit-role">Writer & Sound Design</div>
-        </div>
         <div class="credit-card">
           <div class="credit-name">Sonia</div>
           <div class="credit-role">Illustrator & Coder</div>
+          <div class="credit-work">
+            Was Responsible For:
+          </div>
+          <ul>
+            <li>Produced Visual Assets</li>
+            <li>Developed UI Implmentation</li>
+            <li>Completed Code Structure</li>
+            <li>Cubicle Room</li>
+            <li>Printer Room</li>
+            <li>White Board Room</li>
+            <li>End Room</li>
+            
+            
+          </ul>
         </div>
+
+        <div class="credit-card">
+          <div class="credit-name">Vincent</div>
+          <div class="credit-role">Coder & Project Manager</div>
+          <div class="credit-work">
+            Was Responsible For:
+          </div>
+          <ul>
+            <li>Upside-Down Room</li>
+            <li>Chair Room</li>
+            <li>Inital skeleton code for concept</li>
+            <li>About Page</li>
+            <li>GitHub repository management</li>
+            
+          </ul>
+        </div>
+
+        <div class="credit-card">
+          <div class="credit-name">Nakai</div>
+          <div class="credit-role">Writer & Sound Design</div>
+          <div class="credit-work">
+            Was Responsible For:
+          </div>
+          <ul>
+            <li>Audio</li>
+            <li>Intro</li>
+            <li>Outtro </li>
+            <li>Failure Text</li>
+            <li>Phone Dialogue Text</li>
+          </ul>
+        </div>
+
         
+
       </div>
 
-      <button class="btn-back" onclick="window.history.back()">← Back to Game</button>
+      <a class="btn-back" href="javascript:history.back()">← Back to Game</a>
 
     </div>
   </div>
