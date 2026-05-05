@@ -27,6 +27,11 @@
      failQuiz() which shows the denied overlay.
   7. nudgeNextRoom() fires the standard grey toast with a short delay
      so it never overlaps the keycard or puzzle-completion toast.
+
+  DEVLOPED BY: Sonia
+  CONTRIBUTORS: Vincent & Nakai
+  Chat URL: 
+  
   ═══════════════════════════════════════════════════════════════
 */
 
