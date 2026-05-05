@@ -172,4 +172,4 @@ The project is public on GitHub. All members share equal credit for the creation
 ---
 
 ## Credits
-- All images used are stock images from Canva.
+- All images used are either free graphics from Canva or self-made. Free audio is sourced from Pixabay.
