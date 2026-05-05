@@ -19,6 +19,10 @@
     answerQuestion() compares chosen vs q.answer. Correct advances;
     wrong calls failQuiz() which shows the denied overlay (fully
     black background, z-index above the quiz layer).
+
+  DEVLOPED BY: Sonia
+  CONTRIBUTORS: Nakai
+  Chat URL: 
   ═══════════════════════════════════════════════════════════════
 */
 
