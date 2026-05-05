@@ -5,33 +5,68 @@
   inventory, phone system, and shared helpers.
 
   BUILD NOTES:
-  Office Esc is a point-and-click browser escape room built with
-  vanilla HTML, CSS, and JavaScript — no frameworks or build tools.
-  Art assets were created by the team. Google Fonts (Bebas Neue,
-  Crimson Pro, Share Tech Mono) are loaded via CDN. Audio uses the
-  native Web Audio API. The game is split across three script files:
+  The game is split across three script files:
   gamereq.script.js (core/shared), main.rooms.script.js (rooms 0–3),
   and side.rooms.script.js (rooms 4–5 and quiz).
 
   LOGIC OVERVIEW:
-  1. On "Start Game", resetGame() zeroes all state, then each room's
-     build/reset function populates its DOM elements from data arrays.
-  2. goToRoom(index) swaps the visible .room div and calls onEnterRoom()
-     which fires a phone hint the first time a room is visited.
-  3. navFwd() checks getRoomBlockReason() and, if all 3 keycards are
-     missing, calls showDenied() instead of advancing to r-end.
-  4. Each puzzle function updates the G state object and calls
-     addKeycard() or G.hasKey = true when solved.
-  5. updateInventory() reads G and re-renders the sidebar slots.
-  6. The quiz in r-end runs sequentially; a wrong answer calls
-     failQuiz() which shows the denied overlay.
-  7. nudgeNextRoom() fires the standard grey toast with a short delay
-     so it never overlaps the keycard or puzzle-completion toast.
+/*
+    1. Player clicks something in the game world
+    Click event runs from either a global listener or an element listener
 
+    2. Identify what was clicked
+    Check e.target or element id or dataset to figure out what object it is
+
+    3. Send to the right function
+    phone calls pickupPhone
+    drawer calls clickDrawer
+    paper calls clickPaper(index)
+    chair calls clickChair(index)
+
+    4. Check game state in G
+    Look at flags like G.phonePickedUp, G.hasKey, G.paperDone, G.udDone, G.chairsDone
+
+    5. If the action is not allowed
+    Show a toast or modal message
+    Stop the function using return
+
+    6. If the action is allowed
+    Continue into the interaction logic
+
+    7. Update game state
+    Set flags or inventory changes like G.phonePickedUp = true or G.hasKey = false
+
+    8. Update the UI
+    Hide elements using display none
+    Disable clicking with pointerEvents none
+    Change visuals like open drawer or moved objects
+
+    9. Run puzzle logic for that room
+    Paper checks correct index
+    Drawer checks key requirement
+    Upside-down checks order sequence
+    Chairs updates stack count
+
+    10. Give player feedback
+    Show toast messages
+    Show modals
+    Play simple animations like shake or move
+
+    11. Trigger rewards or story events
+    Add keycards or items
+    Send messages or hints
+    Use setTimeout for delayed story moments
+
+    12. Check if room is complete
+    If complete then move player to next room
+
+    13. Wait for next click
+    Game goes idle until next interaction
+*/
+/*
   DEVLOPED BY: Sonia
   CONTRIBUTORS: Vincent & Nakai
-  Chat URL: 
-  
+  Chat URL: https://chatgpt.com/share/69f9994d-0480-8329-ad38-1e87beca1618
   ═══════════════════════════════════════════════════════════════
 */
 
@@ -59,12 +94,11 @@ const PAPERS = [
   [51,54,11,17,-15],[49,66,11,17,8],[54,60,11,17,-20],[57,53,11,17,14],[53,70,11,17,-5],
   [59,58,11,17,25],[61,68,11,17,-18],[64,54,11,17,10],[66,64,11,17,-8],[69,58,11,17,20],
   [71,70,11,17,-14],
-  [45,59,11,17,3],  // index 16 (ODD_PAPER) — has keycard on back
+  [45,59,11,17,3],  // (!) — has keycard on back
   [57,66,11,17,16],[62,60,11,17,-22],[67,70,11,17,7],[72,56,11,17,-10],[74,66,11,17,19],
   [52,56,11,17,-3],[76,60,11,17,-16],[47,66,11,17,12],[65,56,11,17,-25],[70,63,11,17,6],[55,63,11,17,-9]
 ];
 
-// Each entry: [left%, top%, width%, height%, rotation(deg), flipX(1 or -1)]
 const CHAIRS = [
   [15,70,10,26,0,1],
   [15,10,10,26,60,1],
@@ -246,7 +280,6 @@ function onEnterRoom(roomId) {
   }
 }
 
-
 // ─────────────────────────────────────────────────────────
 // 4. INVENTORY — keycards and key
 // ─────────────────────────────────────────────────────────
@@ -280,7 +313,6 @@ function addKeycard() {
   showToast(`Keycard ${G.keycards} of ${TOTAL_KEYCARDS} obtained.`);
 }
 
-
 // ─────────────────────────────────────────────────────────
 // 5. PHONE — chat bubbles
 // ─────────────────────────────────────────────────────────
@@ -298,7 +330,6 @@ function sendMessage(who, text) {
   container.appendChild(bubble);
   container.scrollTop = container.scrollHeight;
 }
-
 
 // ─────────────────────────────────────────────────────────
 // 6. HELPERS — modal, toast, access denied

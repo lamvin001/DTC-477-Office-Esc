@@ -7,27 +7,11 @@
     Room 2 — Upside-Down (click items in correct order)
     Room 3 — Chairs    (stack all 14 chairs)
 
-  LOGIC STEPS:
-  - Room 0: pickupPhone() enables the phone UI and triggers the
-    first hint. clickDrawer() requires G.hasKey; uses the key,
-    hides the lock, and awards keycard 3.
-  - Room 1: buildPapers() renders all PAPERS array entries as
-    clickable divs. The paper image renders at 100% of the div
-    so it stays perfectly inside the yellow outline box.
-    clickPaper() checks if the clicked index matches ODD_PAPER (16).
-    Wrong papers bounce; correct paper awards keycard 1.
-  - Room 2: resetUpsideDown() stores original positions. clickUD()
-    moves the item then checks if it matches UD_ORDER[udStep].
-    Correct locks the item; wrong reverts it. Completing all 5
-    awards keycard 2.
-  - Room 3: resetChairs() places 14 chairs via the CHAIRS array.
-    clickChair() animates a chair to the stack zone. Completing
-    all 14 shows a modal.
-
   DEVLOPED BY: Sonia
   CONTRIBUTORS: Vincent (Upside Down room & Chair Room)
   Chat URL: 
   https://chatgpt.com/share/69f39ee4-0f0c-83e8-a6fd-7732da60944f
+  https://chatgpt.com/share/69f99dc8-48fc-8329-8c91-606a6b239870
   ═══════════════════════════════════════════════════════════════
 */
 

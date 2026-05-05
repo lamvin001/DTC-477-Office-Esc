@@ -171,8 +171,6 @@
     </div>
 
     <!-- FIRE ROOM -->
-    <!-- To adjust bucket hitbox positions, edit the left/top values on each bucket-hs div below. -->
-    <!-- To adjust the faucet hitbox, edit left/top/width/height on #faucet-hs. -->
     <div id="r-water" class="room">
       <img class="room-bg" src="img/room5.png" alt="Fire room">
 
@@ -186,7 +184,6 @@
            style="position:absolute;left:12%;top:15%;width:18%;pointer-events:none;z-index:3;">
 
       <div id="buckets-layer" style="position:absolute;inset:0;z-index:5;pointer-events:none;">
-        <!-- ↓ Adjust left/top on these three divs to realign bucket hitboxes -->
         <div class="bucket-hs" id="bucket-0" style="left:28%;top:58%;width:8%;height:15%;" onclick="clickBucket(0)">
           <img src="img/bucket.png" alt="bucket" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">
         </div>
@@ -198,10 +195,7 @@
         </div>
       </div>
 
-      <!-- ↓ Adjust left/top/width/height to realign the faucet hitbox -->
-      <div id="faucet-hs" style="position:absolute;left:14%;top:50%;width:8%;height:14%;z-index:10;cursor:pointer;border-radius:6px;" onclick="clickFaucet()"></div>
-
-      <!-- Fire hotspot — click to throw water on fire -->
+      <div id="faucet-hs" style="position:absolute;left:18%;top:40%;width:8%;height:14%;z-index:10;cursor:pointer;border-radius:6px;" onclick="clickFaucet()"></div>
       <div id="fire-hs" style="position:absolute;left:54%;top:30%;width:30%;height:55%;z-index:10;cursor:pointer;border-radius:6px;" onclick="clickFire()"></div>
     </div>
 
