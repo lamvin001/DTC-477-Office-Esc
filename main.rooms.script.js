@@ -23,6 +23,11 @@
   - Room 3: resetChairs() places 14 chairs via the CHAIRS array.
     clickChair() animates a chair to the stack zone. Completing
     all 14 shows a modal.
+
+  DEVLOPED BY: Sonia
+  CONTRIBUTORS: Vincent (Upside Down room & Chair Room)
+  Chat URL: 
+  https://chatgpt.com/share/69f39ee4-0f0c-83e8-a6fd-7732da60944f
   ═══════════════════════════════════════════════════════════════
 */
 
